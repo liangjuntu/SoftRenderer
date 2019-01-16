@@ -16,5 +16,17 @@ namespace SoftRenderer
         {
             InitializeComponent();
         }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            //TODO 在这里绘制
+            Graphics g = this.CreateGraphics();//创建GDI对像
+            g.Clear(Color.White);
+            SoftRenderer.Renderer.Utils.DrawCoordinateXY(g);
+            SoftRenderer.Renderer.Utils.DrawCenterRect(g);
+
+        }
+        
     }
 }

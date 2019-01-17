@@ -28,7 +28,6 @@ namespace SoftRenderer
         {
             base.OnPaint(e);
             //TODO 在这里绘制
-            renderer.ambientColor = Color.White;
             form1Graphics.Clear(Color.White);
             //TODO加Renderer
             renderer.Test_BresenhamDrawLine();

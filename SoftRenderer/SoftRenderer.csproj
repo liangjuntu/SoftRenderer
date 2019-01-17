@@ -53,6 +53,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer\Context.cs" />
+    <Compile Include="Renderer\Rasterizer.cs" />
     <Compile Include="Renderer\Renderer.cs" />
     <Compile Include="Renderer\Utils.cs" />
     <EmbeddedResource Include="Form1.resx">

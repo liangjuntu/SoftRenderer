@@ -7,26 +7,40 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SoftRenderer;
 
 namespace SoftRenderer
 {
     public partial class Form1 : Form
     {
+
+        Graphics form1Graphics;
+        Renderer renderer;
+
         public Form1()
         {
             InitializeComponent();
+            form1Graphics = this.CreateGraphics();
+            renderer = new Renderer(form1Graphics);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
             //TODO 在这里绘制
-            Graphics g = this.CreateGraphics();//创建GDI对像
-            g.Clear(Color.White);
-            SoftRenderer.Renderer.Utils.DrawCoordinateXY(g);
-            SoftRenderer.Renderer.Utils.DrawCenterRect(g);
-
+            renderer.ambientColor = Color.White;
+            form1Graphics.Clear(Color.White);
+            //TODO加Renderer
+            renderer.Test_BresenhamDrawLine();
+            Debug_DrawCoordinate();
         }
-        
+
+        void Debug_DrawCoordinate()
+        {
+            SoftRenderer.Utils.DrawCoordinateXY(form1Graphics);
+            SoftRenderer.Utils.DrawCenterRect(form1Graphics);
+        }
+
+
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace SoftRenderer.Renderer
+namespace SoftRenderer
 {
     public class Utils
     {

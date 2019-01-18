@@ -24,13 +24,23 @@ namespace SoftRenderer
             renderer = new Renderer(form1Graphics);
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            if (renderer != null)
+            {
+                form1Graphics = this.CreateGraphics();
+                renderer.OnResize(form1Graphics);
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
             //TODO 在这里绘制
             form1Graphics.Clear(Color.White);
-            //TODO加Renderer
-            renderer.Test_BresenhamDrawLine();
+            //renderer.Test_BresenhamDrawLine();
+            renderer.Test_CohenSutherlandLineClip();
             Debug_DrawCoordinate();
         }
 

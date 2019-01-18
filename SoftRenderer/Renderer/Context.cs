@@ -19,13 +19,23 @@ namespace SoftRenderer
         public Context(Size size)
         {
             frameSize = size;
-            Init();
+            InitBySize();
         }
 
-        void Init()
+        void InitBySize()
         {
             frameBuffer = new Bitmap(frameSize.Width, frameSize.Height);
             frameGraphics = Graphics.FromImage(frameBuffer);
+        }
+
+        public void OnResize(Size size)
+        {
+            if(frameSize.Width == size.Width && frameSize.Height == size.Height)
+            {
+                return;
+            }
+            frameSize = size;
+            InitBySize();
         }
     }
 }

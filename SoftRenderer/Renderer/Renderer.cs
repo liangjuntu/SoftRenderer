@@ -16,19 +16,33 @@ namespace SoftRenderer
         
         public Renderer(Graphics g)
         {
-            Debug.Assert(g != null);
-            graphics = g;
-            Init();
+            Init(g);
         }
 
         //初始化
-        void Init()
+        void Init(Graphics g)
         {
+            InitByGraphics(g);
             //初始化Frame Buffer
             RectangleF rect = graphics.VisibleClipBounds;
             Size frameSize = new Size((int)rect.Width, (int)rect.Height);
             context = new Context(frameSize);
             rasterizer = new Rasterizer(context);
+        }
+
+        void InitByGraphics(Graphics g)
+        {
+            Debug.Assert(g != null);
+            graphics = g;
+        }
+
+        public void OnResize(Graphics g)
+        {
+            InitByGraphics(g);
+            RectangleF rect = graphics.VisibleClipBounds;
+            Size frameSize = new Size((int)rect.Width, (int)rect.Height);
+            //Debug.Print(string.Format("new size:{0}", frameSize));
+            context.OnResize(frameSize);
         }
 
         void ClearFrameBuffer()
@@ -66,8 +80,8 @@ namespace SoftRenderer
                 int y1 = random.Next(0, maxY);
                 int x2 = random.Next(0, maxX);
                 int y2 = random.Next(0, maxY);
-                Point p1 = new Point(x1, y1);
-                Point p2 = new Point(x2, y2);
+                PointF p1 = new PointF(x1, y1);
+                PointF p2 = new PointF(x2, y2);
                 rasterizer.BresenhamDrawLine(p1, p2, color);
             }
 
@@ -81,6 +95,87 @@ namespace SoftRenderer
             graphics.DrawString("Test_BresenhamDrawLine", font, brush, 20, 20);
         }
 
-        
+        public void Test_CohenSutherlandLineClip()
+        {
+            ClearFrameBuffer();
+            Size frameSize = context.frameSize;
+            int width = frameSize.Width;
+            int height = frameSize.Height;
+
+            //区域
+            PointF min = new PointF(width / 4 - 1, height / 4 - 1);
+            PointF max = new PointF(width / 4 + width/2 -1, height / 4 + height/2 -1);
+            bool accept = false;
+            PointF p0, p1;
+
+            //红色线从左上角到右下角
+            p0 = new PointF(0, 0);
+            p1 = new PointF(width - 1, height - 1);
+            accept = rasterizer.CohenSutherlandLineClip(ref p0, ref p1, min, max);
+            if (accept)
+            {
+                rasterizer.BresenhamDrawLine(p0, p1, Color.Red);
+            }
+
+            //绿色线从左边中间到中心
+            p0 = new PointF(0, height / 2 - 1);
+            p1 = new PointF(width/2-1, height / 2 - 1);
+            accept = rasterizer.CohenSutherlandLineClip(ref p0, ref p1, min, max);
+            if(accept)
+            {
+                rasterizer.BresenhamDrawLine(p0,p1, Color.Green);
+            }
+
+            //蓝色线左上附近到右下附近
+            p0 = new PointF(width/3 - 1, 0);
+            p1 = new PointF(width*2/3 - 1, height - 1);
+            accept = rasterizer.CohenSutherlandLineClip(ref p0, ref p1, min, max);
+            if (accept)
+            {
+                rasterizer.BresenhamDrawLine(p0, p1, Color.Blue);
+            }
+
+            //橘黄色线在左上到做下，应该会被剔除掉
+            p0 = new PointF(width / 8 - 1, 0);
+            p1 = new PointF(width /8 - 1, height - 1);
+            accept = rasterizer.CohenSutherlandLineClip(ref p0, ref p1, min, max);
+            if (accept)
+            {
+                rasterizer.BresenhamDrawLine(p0, p1, Color.Bisque);
+            }
+
+            //随机测试
+            Random random = new Random();
+            const int TEST_COUNT = 10;
+            int maxX = width;
+            int maxY = height;
+            for (int i = 0; i < TEST_COUNT; i++)
+            {
+                Color color = Color.Black;
+                int x1 = random.Next(0, maxX);
+                int y1 = random.Next(0, maxY);
+                int x2 = random.Next(0, maxX);
+                int y2 = random.Next(0, maxY);
+                PointF rp1 = new PointF(x1, y1);
+                PointF rp2 = new PointF(x2, y2);
+                accept = rasterizer.CohenSutherlandLineClip(ref rp1, ref rp2, min, max);
+                if (accept)
+                {
+                    rasterizer.BresenhamDrawLine(rp1, rp2, color);
+                }
+            }
+
+            //画上去
+            graphics.DrawImage(context.frameBuffer, 0, 0);
+
+            Font font = new Font("Arial", 16);
+
+            SolidBrush brush = new SolidBrush(Color.Black);
+
+            graphics.DrawString("Test_CohenSutherlandLineClip", font, brush, 20, 20);
+
+        }
+
+
     }
 }

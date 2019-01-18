@@ -142,13 +142,13 @@ namespace SoftRenderer
         // Cohen–Sutherland clipping algorithm clips a line from
         // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with 
         // diagonal from (xmin, ymin) to (xmax, ymax).
-        bool CohenSutherlandLineClip(ref PointF p0, ref PointF p1, PointF min, PointF max)
+        public bool CohenSutherlandLineClip(ref PointF p0, ref PointF p1, PointF min, PointF max)
         {
 
             float x0 = p0.X;
             float y0 = p0.Y;
             float x1 = p1.X;
-            float y1 = p1.X;
+            float y1 = p1.Y;
 
             int outcode0 = ComputeOutCode(p0, min, max);
             int outcode1 = ComputeOutCode(p1, min, max);

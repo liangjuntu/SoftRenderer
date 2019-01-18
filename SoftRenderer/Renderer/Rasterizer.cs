@@ -28,10 +28,17 @@ namespace SoftRenderer
             Debug.Assert(0 <= p2.Y && p2.Y < frameSize.Height);
 
             //由于是像素，所以把输入转成整数
+            /*
             int x1 = (int)p1.X;
             int y1 = (int)p1.Y;
             int x2 = (int)p2.X;
             int y2 = (int)p2.Y;
+            */
+            //是否需要四写五入？
+            int x1 = (int)(p1.X+0.5);
+            int y1 = (int)(p1.Y+0.5);
+            int x2 = (int)(p2.X+0.5);
+            int y2 = (int)(p2.Y+0.5);
 
             //端点做开始
             int x = x1;
@@ -153,36 +160,41 @@ namespace SoftRenderer
             int outcode0 = ComputeOutCode(p0, min, max);
             int outcode1 = ComputeOutCode(p1, min, max);
             bool accept = false;
-            
-            while(true)
+
+            while (true)
             {
-                if( (outcode0|outcode1) == 0) //相或为0，接受并且退出循环
+                if ((outcode0 | outcode1) == 0) //相或为0，接受并且退出循环
                 {
                     accept = true;
                     break;
-                } else if((outcode0&outcode1) != 0) // 相与为1，拒绝且退出循环
+                }
+                else if ((outcode0 & outcode1) != 0) // 相与为1，拒绝且退出循环
                 {
                     break;
-                } else
+                }
+                else
                 {
                     float x = 0, y = 0;
                     //找出在界外的点
                     int outcodeOut = outcode0 != 0 ? outcode0 : outcode1;
                     // 找出和边界相交的点
                     // 使用点斜式 y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
-                    if( (outcodeOut&TOP) != 0)  // point is above the clip rectangle
+                    if ((outcodeOut & TOP) != 0)  // point is above the clip rectangle
                     {
-                        x = x0 + (x1 - x0)*(max.Y - y0) / (y1 - y0);
+                        x = x0 + (x1 - x0) * (max.Y - y0) / (y1 - y0);
                         y = max.Y;
-                    } else if((outcodeOut&BOTTOM) != 0) // point is below the clip rectangle
-                    { 
-                        x = x0 + (x1 - x0)*(min.Y - y0) / (y1 - y0);
+                    }
+                    else if ((outcodeOut & BOTTOM) != 0) // point is below the clip rectangle
+                    {
+                        x = x0 + (x1 - x0) * (min.Y - y0) / (y1 - y0);
                         y = min.Y;
-                    } else if((outcodeOut&RIGHT) != 0)
+                    }
+                    else if ((outcodeOut & RIGHT) != 0)
                     {
                         y = y0 + (y1 - y0) * (max.X - x0) / (x1 - x0);
                         x = max.X;
-                    } else if ((outcodeOut&LEFT) != 0)
+                    }
+                    else if ((outcodeOut & LEFT) != 0)
                     {
                         y = y0 + (y1 - y0) * (min.X - x0) / (x1 - x0);
                         x = min.X;
@@ -190,14 +202,15 @@ namespace SoftRenderer
 
                     // Now we move outside point to intersection point to clip
                     // 为什么继续循环，两个端点都有可能在外面
-                    if(outcodeOut == outcode0)
+                    if (outcodeOut == outcode0)
                     {
                         p0.X = x;
                         x0 = x;
                         p0.Y = y;
                         y0 = y;
                         outcode0 = ComputeOutCode(p0, min, max);
-                    } else
+                    }
+                    else
                     {
                         p1.X = x;
                         x1 = x;
@@ -207,9 +220,17 @@ namespace SoftRenderer
                     }
                 }
             }
-            
+
             return accept;
 
+        }
+
+        //默认的min和max分别是(0,0)和(width,height)
+        public bool CohenSutherlandLineClip(ref PointF p0, ref PointF p1)
+        {
+            PointF min = new PointF(0, 0);
+            PointF max = new PointF(context.frameSize.Width - 1, context.frameSize.Height - 1);
+            return CohenSutherlandLineClip(ref p0, ref p1, min, max);
         }
     }
 }

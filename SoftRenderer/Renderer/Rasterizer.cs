@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace SoftRenderer
 {
@@ -16,29 +17,34 @@ namespace SoftRenderer
             context = c;
         }
 
+
+        void DrawPixel(int x, int y, Color color)
+        {
+            context.frameBuffer.SetPixel(x, y, color);
+        }
+
         //Bresenham画线算法
-        public void BresenhamDrawLine(PointF p1, PointF p2, Color color)
+        public void BresenhamDrawLine(Vector2 p1, Vector2 p2, Color color)
         {
             Size frameSize = context.frameSize;
             Bitmap frameBuffer = context.frameBuffer;
-            //BresenHam输入的是x和y是像素索引，范围是0<=x<width；0<=y<height
             Debug.Assert(0 <= p1.X && p1.X < frameSize.Width);
             Debug.Assert(0 <= p1.Y && p1.Y < frameSize.Height);
             Debug.Assert(0 <= p2.X && p2.X < frameSize.Width);
             Debug.Assert(0 <= p2.Y && p2.Y < frameSize.Height);
 
             //由于是像素，所以把输入转成整数
-            /*
             int x1 = (int)p1.X;
             int y1 = (int)p1.Y;
             int x2 = (int)p2.X;
             int y2 = (int)p2.Y;
-            */
-            //是否需要四写五入？
-            int x1 = (int)(p1.X+0.5);
-            int y1 = (int)(p1.Y+0.5);
-            int x2 = (int)(p2.X+0.5);
-            int y2 = (int)(p2.Y+0.5);
+
+            //BresenHam输入的是x和y是像素索引，有效范围是0<=x<width；0<=y<height
+            x1 = Math.Max(0, Math.Min(frameSize.Width-1, x1));
+            y1 = Math.Max(0, Math.Min(frameSize.Height-1, y1));
+            x2 = Math.Max(0, Math.Min(frameSize.Width-1, x2));
+            y2 = Math.Max(0, Math.Min(frameSize.Height-1, y2));
+           
 
             //端点做开始
             int x = x1;
@@ -118,7 +124,7 @@ namespace SoftRenderer
         const int TOP = 8;//1000
         // Compute the bit code for a point (x, y) using the clip rectangle
         // bounded diagonally by (xmin, ymin), and (xmax, ymax)
-        int ComputeOutCode(PointF p, PointF min, PointF max)
+        int ComputeOutCode(Vector2 p, Vector2 min, Vector2 max)
         {
             int code = INSIDE;// initialised as being inside of clip window
 
@@ -149,7 +155,7 @@ namespace SoftRenderer
         // Cohen–Sutherland clipping algorithm clips a line from
         // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with 
         // diagonal from (xmin, ymin) to (xmax, ymax).
-        public bool CohenSutherlandLineClip(ref PointF p0, ref PointF p1, PointF min, PointF max)
+        public bool CohenSutherlandLineClip(ref Vector2 p0, ref Vector2 p1, Vector2 min, Vector2 max)
         {
 
             float x0 = p0.X;
@@ -226,11 +232,103 @@ namespace SoftRenderer
         }
 
         //默认的min和max分别是(0,0)和(width,height)
-        public bool CohenSutherlandLineClip(ref PointF p0, ref PointF p1)
+        public bool CohenSutherlandLineClip(ref Vector2 p0, ref Vector2 p1)
         {
-            PointF min = new PointF(0, 0);
-            PointF max = new PointF(context.frameSize.Width - 1, context.frameSize.Height - 1);
+            Vector2 min = new Vector2(0, 0);
+            Vector2 max = new Vector2(context.frameSize.Width, context.frameSize.Height);
             return CohenSutherlandLineClip(ref p0, ref p1, min, max);
+        }
+
+        float EdgeFunction(Vector2 a, Vector2 b, Vector2 c)
+        {
+            return (c.X - a.X) * (b.Y - a.Y) - (c.Y - a.Y) * (b.X - a.X);
+        }
+
+        Vector3 BarycentricCoordinates(Vector2 p, Vector2 v0, Vector2 v1, Vector2 v2)
+        {
+            //如果三点共线，area = 0
+            float area = EdgeFunction(v0, v1, v2);
+            if( Math.Abs(area) < 0.000001)
+            {
+                return Vector3.One * (-1);
+            }
+            float w0 = EdgeFunction(v1, v2, p);
+            float w1 = EdgeFunction(v2, v0, p);
+            float w2 = EdgeFunction(v0, v1, p);
+            w0 /= area;
+            w1 /= area;
+            w2 /= area;
+            return new Vector3(w0, w1, w2);
+        }
+
+        //做透视除法和转到ViewPort变换
+        VSOutput PerspectiveDivideAndViewportTransformVertex(VSOutput v)
+        {
+            const float FLT_EPSILON = 1.192092896e-07F; // smallest such that 1.0+FLT_EPSILON != 1.0
+            if (v.position.W <= FLT_EPSILON)
+            {
+                return v;
+            }
+
+            Vector4 position = v.position;
+
+            float fInvW = 1 / position.W;
+            position = new Vector4(position.X * fInvW, position.Y * fInvW, position.Z * fInvW, 1) ;
+            //TODO viewport transform
+
+            v.position = new Vector4(position.X , position.Y , position.Z , fInvW);
+
+            //TODO 改成01的Color
+            v.color *= fInvW;
+            v.uv *= fInvW;
+            v.normal *= fInvW;
+
+            return v;
+        }
+
+        public void BarycentricRasterizeTriangle(VSOutput v0, VSOutput v1, VSOutput v2)
+        {
+            int width = context.frameSize.Width;
+            int height = context.frameSize.Height;
+            //求包围盒
+            float xmin = Math.Min(Math.Min(v0.position.X, v1.position.X), v2.position.X);
+            float xmax = Math.Max(Math.Max(v0.position.X, v1.position.X), v2.position.X);
+            float ymin = Math.Min(Math.Min(v0.position.Y, v1.position.Y), v2.position.Y);
+            float ymax = Math.Max(Math.Max(v0.position.Y, v1.position.Y), v2.position.X);
+            //像素坐标包围盒
+            int x0 = Math.Max(0, Math.Min((int)xmin, width-1));
+            int y0 = Math.Max(0, Math.Min((int)ymin, height-1));
+            int x1 = Math.Max(0, Math.Min((int)xmax, width-1));
+            int y1 = Math.Max(0, Math.Min((int)ymax, height-1));
+
+            Vector2 xy0 = new Vector2(v0.position.X, v0.position.Y);
+            Vector2 xy1 = new Vector2(v1.position.X, v1.position.Y);
+            Vector2 xy2 = new Vector2(v2.position.X, v2.position.Y);
+
+            for( int y = y0; y <= y1; ++y )
+            {
+                for( int x = x0; x <= x1; ++x )
+                {
+                    //加0.5取像素的中间位置的坐标
+                    Vector2 pixel = new Vector2(x + 0.5f, y + 0.5f);
+                    Vector3 w = BarycentricCoordinates(pixel, xy0, xy1, xy2);
+                    if(!(w.X >=0 && w.Y >=0 && w.Z >=0))
+                    {
+                        //像素点不在三角形内
+                        continue;
+                    }
+
+                    //TODO
+                    //float InvW = 
+                    //float depth = 
+
+                    DrawPixel(x, y, Color.Red);
+                }
+
+            }
+      
+
+
         }
     }
 }

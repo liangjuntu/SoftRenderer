@@ -68,6 +68,11 @@ namespace SoftRenderer
             Color col = Color.FromArgb(a, r, g, b);
             return col;
         }
+
+        public static float Degree2Radian(float degree)
+        {
+            return (float)((Math.PI / 180f) * degree);
+        }
         
     }
 }

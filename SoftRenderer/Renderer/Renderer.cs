@@ -9,12 +9,21 @@ using System.Numerics;
 
 namespace SoftRenderer
 {
+    public enum DrawMode
+    {
+        Normal = 0,
+        Wireframe,
+        Depth
+    }
+
     public class Renderer
     {
         Graphics graphics;
         Context context;
         Rasterizer rasterizer;
-        
+
+        public DrawMode drawMode = DrawMode.Normal;
+
         public Renderer(Graphics g)
         {
             Init(g);

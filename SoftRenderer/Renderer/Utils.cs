@@ -53,8 +53,21 @@ namespace SoftRenderer
             g.DrawRectangle(pen, rect);
         }
 
-        
+       
+        public static int Clamp(int num, int min, int max)
+        {
+            return Math.Max(min, Math.Min(max, num));
+        }
 
+        public static Color VectorToColor(System.Numerics.Vector4 color)
+        {
+            int a = Clamp((int)Math.Round(color.W * 255), 0,255);
+            int r = Clamp((int)Math.Round(color.X * 255), 0,255);
+            int g = Clamp((int)Math.Round(color.Y * 255), 0,255);
+            int b = Clamp((int)Math.Round(color.Z * 255), 0,255);
+            Color col = Color.FromArgb(a, r, g, b);
+            return col;
+        }
         
     }
 }

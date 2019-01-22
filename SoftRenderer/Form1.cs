@@ -40,8 +40,10 @@ namespace SoftRenderer
             //TODO 在这里绘制
             form1Graphics.Clear(Color.White);
             //renderer.Test_BresenhamDrawLine();
-            renderer.Test_CohenSutherlandLineClip();
-            Debug_DrawCoordinate();
+            //renderer.Test_CohenSutherlandLineClip();
+            renderer.Test_BarycentricRasterizeTriangle();
+            renderer.Present();
+            //Debug_DrawCoordinate();
         }
 
         void Debug_DrawCoordinate()

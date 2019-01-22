@@ -48,9 +48,15 @@ namespace SoftRenderer
 
         void ClearFrameBuffer()
         {
-            context.frameGraphics.Clear(context.ambientColor);
+            context.ClearFrameBuffer();
         }
 
+
+        public void Present()
+        {
+            //画上去
+            graphics.DrawImage(context.frameBuffer, 0, 0);
+        }
         
 
         public void Test_BresenhamDrawLine()
@@ -86,8 +92,7 @@ namespace SoftRenderer
                 rasterizer.BresenhamDrawLine(p1, p2, color);
             }
 
-            //画上去
-            graphics.DrawImage(context.frameBuffer, 0, 0);
+            
 
             Font font = new Font("Arial", 16);
 
@@ -166,8 +171,6 @@ namespace SoftRenderer
                 }
             }
 
-            //画上去
-            graphics.DrawImage(context.frameBuffer, 0, 0);
 
             Font font = new Font("Arial", 16);
 
@@ -177,6 +180,48 @@ namespace SoftRenderer
 
         }
 
+
+        public void Test_BarycentricRasterizeTriangle()
+        {
+            context.clearColor = Color.White;
+            ClearFrameBuffer();
+            //假设n = 1, far = 2
+            //测试光栅化和插值
+            //第一个三角形,v0红色在中上，v1绿和v2蓝在中间的左右，v0在far plane， v1,v2在near plane
+            VSOutput v0 = new VSOutput();
+            v0.position = new Vector4(0f, 1f, 1f, 2f);
+            v0.color = new Vector4(1f, 0f, 0f, 1f);
+            VSOutput v1 = new VSOutput();
+            v1.position = new Vector4(-0.5f, -0.5f, -1f, 1f);
+            v1.color = new Vector4(0f, 1f, 0f, 1f);
+            VSOutput v2 = new VSOutput();
+            v2.position = new Vector4(0.5f, -0.5f, -1f, 1f);
+            v2.color = new Vector4(0f, 0f, 1f, 1f);
+            
+            v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
+            v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
+            v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
+            rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
+
+            //测试depth test
+            //第二个三角形，v0红在近平面，v1,v2在远
+            v0.position = new Vector4(-0.5f, 0.5f, -1f, 1f);
+            v1.position = new Vector4(-2f, -1f, 1f, 2f);
+            v2.position = new Vector4(0f, -2f, 1f, 2f);
+            v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
+            v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
+            v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
+            rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
+
+            //第三个三角形，v1绿在近，其他在远平面
+            v0.position = new Vector4(-2f, 0f, 1f, 2f);
+            v1.position = new Vector4(-0.5f, -1f, -1f, 1f);
+            v2.position = new Vector4(0f, -1f, 1f, 2f);
+            v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
+            v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
+            v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
+            rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
+        }
 
     }
 }

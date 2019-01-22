@@ -13,8 +13,9 @@ namespace SoftRenderer
         public Size frameSize;
         public Bitmap frameBuffer; //帧缓冲
         public Graphics frameGraphics; //frameBuffer对应的Graphics
+        public float[,] depthBuffer;
 
-        public Color ambientColor = Color.White;
+        public Color clearColor = Color.White;
 
         public Context(Size size)
         {
@@ -26,6 +27,7 @@ namespace SoftRenderer
         {
             frameBuffer = new Bitmap(frameSize.Width, frameSize.Height);
             frameGraphics = Graphics.FromImage(frameBuffer);
+            depthBuffer = new float[frameSize.Width,frameSize.Height];
         }
 
         public void OnResize(Size size)
@@ -36,6 +38,18 @@ namespace SoftRenderer
             }
             frameSize = size;
             InitBySize();
+        }
+
+        public void ClearFrameBuffer()
+        {
+            frameGraphics.Clear(clearColor);
+            for (int i = 0; i < frameSize.Width; i++)
+            {
+                for(int j = 0; j < frameSize.Height; ++ j)
+                {
+                    depthBuffer[i, j] = float.MaxValue;
+                }
+            }
         }
     }
 }

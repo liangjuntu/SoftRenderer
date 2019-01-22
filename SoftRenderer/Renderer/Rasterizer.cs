@@ -262,7 +262,7 @@ namespace SoftRenderer
         }
 
         //做透视除法和转到ViewPort变换
-        VSOutput PerspectiveDivideAndViewportTransformVertex(VSOutput v)
+        public VSOutput PerspectiveDivideAndViewportTransformVertex(VSOutput v)
         {
             const float FLT_EPSILON = 1.192092896e-07F; // smallest such that 1.0+FLT_EPSILON != 1.0
             if (v.position.W <= FLT_EPSILON)
@@ -276,7 +276,12 @@ namespace SoftRenderer
             position = new Vector4(position.X * fInvW, position.Y * fInvW, position.Z * fInvW, 1) ;
             //TODO viewport transform
 
-            v.position = new Vector4(position.X , position.Y , position.Z , fInvW);
+            int width = context.frameBuffer.Width;
+            int height = context.frameBuffer.Height;
+            float x = (position.X + 1) * 0.5f;
+            float y = (1 - position.Y) * 0.5f;
+
+            v.position = new Vector4(x*width, y*height, position.Z , fInvW);
 
             //TODO 改成01的Color
             v.color *= fInvW;
@@ -294,12 +299,12 @@ namespace SoftRenderer
             float xmin = Math.Min(Math.Min(v0.position.X, v1.position.X), v2.position.X);
             float xmax = Math.Max(Math.Max(v0.position.X, v1.position.X), v2.position.X);
             float ymin = Math.Min(Math.Min(v0.position.Y, v1.position.Y), v2.position.Y);
-            float ymax = Math.Max(Math.Max(v0.position.Y, v1.position.Y), v2.position.X);
+            float ymax = Math.Max(Math.Max(v0.position.Y, v1.position.Y), v2.position.Y);
             //像素坐标包围盒
-            int x0 = Math.Max(0, Math.Min((int)xmin, width-1));
-            int y0 = Math.Max(0, Math.Min((int)ymin, height-1));
-            int x1 = Math.Max(0, Math.Min((int)xmax, width-1));
-            int y1 = Math.Max(0, Math.Min((int)ymax, height-1));
+            int x0 = Utils.Clamp((int)xmin, 0, width-1);
+            int y0 = Utils.Clamp((int)ymin, 0, height-1);
+            int x1 = Utils.Clamp((int)xmax, 0, width-1);
+            int y1 = Utils.Clamp((int)ymax, 0, height-1);
 
             Vector2 xy0 = new Vector2(v0.position.X, v0.position.Y);
             Vector2 xy1 = new Vector2(v1.position.X, v1.position.Y);
@@ -312,17 +317,33 @@ namespace SoftRenderer
                     //加0.5取像素的中间位置的坐标
                     Vector2 pixel = new Vector2(x + 0.5f, y + 0.5f);
                     Vector3 w = BarycentricCoordinates(pixel, xy0, xy1, xy2);
-                    if(!(w.X >=0 && w.Y >=0 && w.Z >=0))
+                    float w0 = w.X; float w1 = w.Y; float w2 = w.Z;
+                    if(!(w0 >=0 && w1 >=0 && w2 >=0))
                     {
                         //像素点不在三角形内
                         continue;
                     }
 
-                    //TODO
-                    //float InvW = 
-                    //float depth = 
+                    //深度测试
+                    float depth = w0 * v0.position.Z + w1 * v1.position.Z + w2 * v2.position.Z;
+                    if(context.depthBuffer[x,y] < depth)
+                    {
+                        continue;
+                    }
+                    context.depthBuffer[x, y] = depth;
+                    
+                    //插值UV等顶点属性
+                    float fInvW = w0 * v0.position.W + w1 * v1.position.W + w2 * v2.position.W;
+                    //由于position.W是1/W = 1/-Z_Eye
+                    float Z_Eye = 1f / fInvW;
+                    Vector2 uv = w0 * v0.uv + w1 * v1.uv + w2 * v2.uv;
+                    uv *= Z_Eye;
 
-                    DrawPixel(x, y, Color.Red);
+                    Vector4 color = w0 * v0.color + w1 * v1.color + w2 * v2.color;
+                    color *= Z_Eye;
+                    Color col = Utils.VectorToColor(color);
+
+                    DrawPixel(x, y, col);
                 }
 
             }

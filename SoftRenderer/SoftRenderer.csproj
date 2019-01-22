@@ -54,10 +54,16 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer\Base\Camera.cs" />
+    <Compile Include="Renderer\Base\GameObject.cs" />
+    <Compile Include="Renderer\Base\Shader.cs" />
+    <Compile Include="Renderer\Base\Statics.cs" />
+    <Compile Include="Renderer\Base\Transform.cs" />
     <Compile Include="Renderer\Base\Vertex.cs" />
     <Compile Include="Renderer\Context.cs" />
     <Compile Include="Renderer\Rasterizer.cs" />
     <Compile Include="Renderer\Renderer.cs" />
+    <Compile Include="Renderer\ThirdParty\CubeTestData.cs" />
     <Compile Include="Renderer\ThirdParty\wavefront_obj_3d_model_importer.cs" />
     <Compile Include="Renderer\Utils.cs" />
     <EmbeddedResource Include="Form1.resx">

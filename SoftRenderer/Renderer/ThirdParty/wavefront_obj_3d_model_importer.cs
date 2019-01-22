@@ -357,8 +357,13 @@ namespace Games
     ///     It can consist of three or more vertices an can therefore be split up
     ///     into one or more triangles.
     /// </remarks>
-    public struct WavefrontFace
+    public class WavefrontFace
     {
+        public WavefrontFace()
+        {
+            Vertices = new List<WavefrontVertex>();
+        }
+
         public List<WavefrontVertex> Vertices { get; set; }
 
         // Number of triangles the face (polygon) consists of

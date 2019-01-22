@@ -9,13 +9,13 @@ namespace SoftRenderer
 {
     public class Camera
     {
-        float near = 0f;
-        float far = 1f;
-        float fov = 15f;
-        float aspect = 1f;
-       
-        public Transform transform;
-        public Matrix4x4 World2Camera
+        public float Near = 0f;
+        public float Far = 1f;
+        public float Fov = 15f;
+        public float Aspect = 1f;
+
+        public Transform transform = new Transform();
+        public Matrix4x4 ViewMatrix
         {
             get
             {
@@ -27,13 +27,13 @@ namespace SoftRenderer
             }
         }
 
-        public Matrix4x4 Projection
+        public Matrix4x4 ProjectionMatrix
         {
             get
             {
                 //return Matrix4x4.CreatePerspectiveFieldOfView(fov, aspect, near, far);
                 //上面自带的方法ndc的z范围是[0,1]，所以要自己写成[-1,1]范围的
-                return GetFrustum(fov, aspect, near, far);
+                return GetFrustum(Fov, Aspect, Near, Far);
             }
         }
 

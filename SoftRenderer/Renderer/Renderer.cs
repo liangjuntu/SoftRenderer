@@ -6,24 +6,20 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Diagnostics;
 using System.Numerics;
+using Games;
 
 namespace SoftRenderer
 {
-    public enum DrawMode
-    {
-        Normal = 0,
-        Wireframe,
-        Depth
-    }
+   
 
     public class Renderer
     {
+        Statics statics;
         Graphics graphics;
         Context context;
         Rasterizer rasterizer;
-
-        public DrawMode drawMode = DrawMode.Normal;
-
+        public Camera camera { protected set; get; }
+       
         public Renderer(Graphics g)
         {
             Init(g);
@@ -38,6 +34,8 @@ namespace SoftRenderer
             Size frameSize = new Size((int)rect.Width, (int)rect.Height);
             context = new Context(frameSize);
             rasterizer = new Rasterizer(context);
+            camera = new Camera();
+            statics = new Statics();
         }
 
         void InitByGraphics(Graphics g)
@@ -232,5 +230,73 @@ namespace SoftRenderer
             rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
         }
 
+
+        public void DrawGameObject(GameObject gameobject, Shader shader)
+        {
+            statics.meshCount += 1;
+
+            //设置Shader相关
+            Transform transform = gameobject.transform;
+            Matrix4x4 modelMatrix = transform.ModelToWorld;
+            shader.SetModelMatrix(modelMatrix);
+
+            WavefrontObject meshObj = gameobject.meshObj;
+
+            foreach( var faceGroup in meshObj.Groups)
+            {
+                statics.submeshCount += 1;
+                //faceGroup相当于submesh
+                foreach( var face in faceGroup.Faces )
+                {
+                    //face为triangle fan;可能会有多个三角形
+                    Debug.Assert(face.Vertices.Count > 2);
+                    Vertex vertex0 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[0]);
+                    VSOutput v0 = shader.VertShader(vertex0);
+                    v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
+                    statics.vertexCount += 1;
+
+                    for ( int i = 1; i+1 < face.Vertices.Count; i+=2)
+                    {
+                        Vertex vertex1 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[i]);
+                        Vertex vertex2 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[i+1]);
+                        VSOutput v1 = shader.VertShader(vertex1);
+                        VSOutput v2 = shader.VertShader(vertex2);
+                        v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
+                        v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
+                        statics.vertexCount += 2;
+                        statics.triangleCount += 1;
+                        rasterizer.DrawTriangle(v0, v1, v2);
+                    } 
+                }
+
+            }
+            
+
+            
+
+        }
+
+        public void DrawAll(List<GameObject> gameobjes)
+        {
+            Matrix4x4 viewMatrix = camera.ViewMatrix;
+            Matrix4x4 projectionMatrix = camera.ProjectionMatrix;
+            ShaderContext shaderContext = new ShaderContext();
+
+            shaderContext.SetViewProjectionMatrix(viewMatrix, projectionMatrix);
+
+            Shader shader = new Shader(shaderContext);
+
+
+            foreach( var gameobject in gameobjes)
+            {
+                DrawGameObject(gameobject, shader);
+            }
+
+        }
+
+        public void SetCamera()
+        {
+
+        }
     }
 }

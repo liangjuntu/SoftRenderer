@@ -8,7 +8,7 @@ namespace SoftRenderer
 {
     public class GameObject
     {
-        public Transform transform;
+        public Transform transform = new Transform();
         public Games.WavefrontObject meshObj;
 
     }

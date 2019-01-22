@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SoftRenderer;
+using System.Numerics;
 
 namespace SoftRenderer
 {
@@ -16,12 +16,14 @@ namespace SoftRenderer
 
         Graphics form1Graphics;
         Renderer renderer;
+        List<GameObject> gameObjects;
 
         public Form1()
         {
             InitializeComponent();
             form1Graphics = this.CreateGraphics();
             renderer = new Renderer(form1Graphics);
+            gameObjects = new List<GameObject>();
         }
 
         protected override void OnResize(EventArgs e)
@@ -52,6 +54,37 @@ namespace SoftRenderer
             SoftRenderer.Utils.DrawCenterRect(form1Graphics);
         }
 
+        void SetUpCamera()
+        {
+            Camera camera = renderer.camera;
+            //TODO
+        }
+
+        void SetUpGameObjects()
+        {
+            for( int i = 0; i < gameObjects.Count; ++i )
+            {
+                GameObject gameObject = gameObjects[i];
+                gameObject.transform.position = Vector3.Zero;
+                gameObject.transform.eulerAngles = Vector3.Zero;
+                gameObject.transform.scale = Vector3.One;
+                //TODO
+            }
+        }
+
+        void AddGameObject(string path)
+        {
+            //TODO
+            GameObject gameObject = new GameObject();
+            gameObjects.Add(gameObject);
+        }
+
+        void FrameUpdate()
+        {
+            SetUpCamera();
+            renderer.DrawAll(gameObjects);
+            renderer.Present();
+        }
 
     }
 }

@@ -285,7 +285,7 @@ namespace SoftRenderer
 
             //TODO 改成01的Color
             v.color *= fInvW;
-            v.uv *= fInvW;
+            v.texcoord *= fInvW;
             v.normal *= fInvW;
 
             return v;
@@ -336,7 +336,7 @@ namespace SoftRenderer
                     float fInvW = w0 * v0.position.W + w1 * v1.position.W + w2 * v2.position.W;
                     //由于position.W是1/W = 1/-Z_Eye
                     float Z_Eye = 1f / fInvW;
-                    Vector2 uv = w0 * v0.uv + w1 * v1.uv + w2 * v2.uv;
+                    Vector2 uv = w0 * v0.texcoord + w1 * v1.texcoord + w2 * v2.texcoord;
                     uv *= Z_Eye;
 
                     Vector4 color = w0 * v0.color + w1 * v1.color + w2 * v2.color;
@@ -347,9 +347,27 @@ namespace SoftRenderer
                 }
 
             }
-      
-
-
         }
+
+        public void DrawLine(VSOutput v0, VSOutput v1)
+        {
+            //TODO
+        }
+
+        public void DrawTriangle(VSOutput v0, VSOutput v1, VSOutput v2)
+        {
+            switch(context.drawMode)
+            {
+                case DrawMode.Normal:
+                    BarycentricRasterizeTriangle(v0, v1, v2);
+                    break;
+                case DrawMode.Depth:
+                    break;
+                case DrawMode.Wireframe:
+                    break;
+            }
+        }
+
+
     }
 }

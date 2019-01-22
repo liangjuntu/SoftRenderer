@@ -7,6 +7,13 @@ using System.Drawing;
 
 namespace SoftRenderer
 {
+    public enum DrawMode
+    {
+        Normal = 0,
+        Wireframe,
+        Depth
+    }
+
     public class Context
     {
         //Frame Buffer相关
@@ -16,6 +23,7 @@ namespace SoftRenderer
         public float[,] depthBuffer;
 
         public Color clearColor = Color.White;
+        public DrawMode drawMode = DrawMode.Normal;
 
         public Context(Size size)
         {

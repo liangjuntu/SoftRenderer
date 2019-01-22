@@ -19,7 +19,7 @@ namespace SoftRenderer
             get
             {
                 return Matrix4x4.CreateTranslation(position) *
-                    Matrix4x4.CreateFromYawPitchRoll(eulerAngles.Y, eulerAngles.X, eulerAngles.z) *
+                    Matrix4x4.CreateFromYawPitchRoll(eulerAngles.Y, eulerAngles.X, eulerAngles.Z) *
                     Matrix4x4.CreateScale(scale);
                     
             }

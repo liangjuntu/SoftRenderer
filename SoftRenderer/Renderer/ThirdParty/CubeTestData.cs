@@ -109,7 +109,7 @@ namespace SoftRenderer.Test
         //public static Material mat = new Material(new Color(0, 0, 0.1f), 0.1f, new Color(0.3f, 0.3f, 0.3f), new Color(1, 1, 1), 99);
 
 
-        public WavefrontObject ToWavefrontObject()
+        public static WavefrontObject ToWavefrontObject()
         {
             WavefrontObject obj = new WavefrontObject();
             for( int i = 0; i < CubeTestData.pointList.Length; ++i)
@@ -134,6 +134,7 @@ namespace SoftRenderer.Test
             for( int i = 0; i + 2 < CubeTestData.indexs.Length; i += 3)
             {
                 WavefrontFace face = new WavefrontFace();
+                faceGroup.Faces.Add(face);
                 int index0 = CubeTestData.indexs[i];
                 int index1 = CubeTestData.indexs[i+1];
                 int index2 = CubeTestData.indexs[i+2];

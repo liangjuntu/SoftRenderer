@@ -23,6 +23,9 @@ namespace SoftRenderer
                 Matrix4x4 C = transform.ModelToWorld;
                 Matrix4x4 V = Matrix4x4.Identity;
                 Matrix4x4.Invert(C, out V);
+                Matrix4x4 invertZ = Matrix4x4.Identity;
+                invertZ.M33 = -1;
+                V = V * invertZ;
                 return V;
             }
         }

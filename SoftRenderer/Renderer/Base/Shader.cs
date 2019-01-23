@@ -47,6 +47,10 @@ namespace SoftRenderer
         public VSOutput VertShader(Vertex v)
         {
             VSOutput OUT = new VSOutput();
+            OUT.position = Vector4.Transform( v.position, MVP);
+            //OUT.normal = Vector4.Transform(v.normal, MVP);
+            OUT.texcoord = v.texcoord;
+            OUT.color = v.color;
             return OUT;
         }
 

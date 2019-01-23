@@ -16,7 +16,7 @@ namespace SoftRenderer
     {
         Statics statics;
         Graphics graphics;
-        Context context;
+        public Context context;
         Rasterizer rasterizer;
         public Camera camera { protected set; get; }
        
@@ -46,16 +46,20 @@ namespace SoftRenderer
 
         public void OnResize(Graphics g)
         {
-            InitByGraphics(g);
-            RectangleF rect = graphics.VisibleClipBounds;
-            Size frameSize = new Size((int)rect.Width, (int)rect.Height);
-            //Debug.Print(string.Format("new size:{0}", frameSize));
-            context.OnResize(frameSize);
+            lock (context.frameBuffer)
+            {
+                InitByGraphics(g);
+                RectangleF rect = graphics.VisibleClipBounds;
+                Size frameSize = new Size((int)rect.Width, (int)rect.Height);
+                //Debug.Print(string.Format("new size:{0}", frameSize));
+                context.OnResize(frameSize);
+            }
         }
 
-        void ClearFrameBuffer()
+        public void Clear()
         {
             context.ClearFrameBuffer();
+            statics.Clear();
         }
 
 
@@ -68,7 +72,7 @@ namespace SoftRenderer
 
         public void Test_BresenhamDrawLine()
         {
-            ClearFrameBuffer();
+            Clear();
             Size frameSize = context.frameSize;
             int width = frameSize.Width;
             int height = frameSize.Height;
@@ -110,7 +114,7 @@ namespace SoftRenderer
 
         public void Test_CohenSutherlandLineClip()
         {
-            ClearFrameBuffer();
+            Clear();
             Size frameSize = context.frameSize;
             int width = frameSize.Width;
             int height = frameSize.Height;
@@ -191,7 +195,7 @@ namespace SoftRenderer
         public void Test_BarycentricRasterizeTriangle()
         {
             context.clearColor = Color.White;
-            ClearFrameBuffer();
+            Clear();
             //假设n = 1, far = 2
             //测试光栅化和插值
             //第一个三角形,v0红色在中上，v1绿和v2蓝在中间的左右，v0在far plane， v1,v2在near plane
@@ -278,25 +282,36 @@ namespace SoftRenderer
 
         public void DrawAll(List<GameObject> gameobjes)
         {
-            Matrix4x4 viewMatrix = camera.ViewMatrix;
-            Matrix4x4 projectionMatrix = camera.ProjectionMatrix;
-            ShaderContext shaderContext = new ShaderContext();
-
-            shaderContext.SetViewProjectionMatrix(viewMatrix, projectionMatrix);
-
-            Shader shader = new Shader(shaderContext);
-
-
-            foreach( var gameobject in gameobjes)
+            //lock (context.frameBuffer)
             {
-                DrawGameObject(gameobject, shader);
+                Matrix4x4 viewMatrix = camera.ViewMatrix;
+                Matrix4x4 projectionMatrix = camera.ProjectionMatrix;
+                ShaderContext shaderContext = new ShaderContext();
+
+                shaderContext.SetViewProjectionMatrix(viewMatrix, projectionMatrix);
+
+                Shader shader = new Shader(shaderContext);
+
+
+                foreach (var gameobject in gameobjes)
+                {
+                    DrawGameObject(gameobject, shader);
+                }
             }
-
         }
 
-        public void SetCamera()
+        public void SetUpCamera(Vector3 position, Vector3 eulerAngles, float near, float far, float fov, Color clearColor)
         {
-
+            Transform transform = camera.transform;
+            transform.position = position;
+            transform.eulerAngles = eulerAngles;
+            camera.Near = near;
+            camera.Far = far;
+            camera.Fov = fov;
+            camera.Aspect = (float)context.frameSize.Width / (float)context.frameSize.Height;
+            context.clearColor = clearColor;
         }
+
+       
     }
 }

@@ -18,10 +18,11 @@ namespace SoftRenderer
         {
             get
             {
-                return Matrix4x4.CreateTranslation(position) *
+                //row major的时候按p' = p*SRT的顺序
+                return
+                    Matrix4x4.CreateScale(scale) *
                     Matrix4x4.CreateFromYawPitchRoll(eulerAngles.Y, eulerAngles.X, eulerAngles.Z) *
-                    Matrix4x4.CreateScale(scale);
-                    
+                    Matrix4x4.CreateTranslation(position);
             }
         }
     }

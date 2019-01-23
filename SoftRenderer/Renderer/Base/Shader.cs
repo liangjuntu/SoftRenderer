@@ -17,21 +17,27 @@ namespace SoftRenderer
         public Matrix4x4 ProjectionMatrix { get { return projectionMatrix; } }
         public Matrix4x4 VP { get { return vpMatrix; } }
 
+        public TextureFilterMode textureFilterMode { get;  set; }
+       
+
         public void SetViewProjectionMatrix(Matrix4x4 v, Matrix4x4 p)
         {
             viewMatrix = v;
             projectionMatrix = p;
             vpMatrix = v * p;
         }
+
     }
 
     public class Shader
     {
-        ShaderContext shaderContext;
+        public ShaderContext shaderContext { get; private set; }
         Matrix4x4 modelMatrix;
         Matrix4x4 mvpMatrix;
         public Matrix4x4 ModelMatrix { get{ return modelMatrix; }}
         public Matrix4x4 MVP { get{ return mvpMatrix; }}
+
+        public Texture texture { get; set; }
 
         public Shader( ShaderContext sc )
         {
@@ -54,9 +60,16 @@ namespace SoftRenderer
             return OUT;
         }
 
-        public bool FragShader()
+        public PSOutput FragShader(VSOutput v)
         {
-            return true;
+            PSOutput OUT = new PSOutput();
+            Vector4 col = v.color;
+            if(texture != null)
+            {
+                col = texture.Tex2D(v.texcoord, shaderContext.textureFilterMode);
+                OUT.color = col;
+            }
+            return OUT;
         }
     }
 }

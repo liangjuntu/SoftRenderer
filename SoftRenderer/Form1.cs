@@ -23,16 +23,20 @@ namespace SoftRenderer
         Graphics form1Graphics;
         Renderer renderer;
         List<GameObject> gameObjects;
+        DrawInfo drawInfo;
+        bool isDrawing = false;
         //System.Timers.Timer timer;
         //用下面这个Timer，是单线程的，上面的是多线程
         System.Windows.Forms.Timer timer;
 
+        
+
         float FPS = 30f;
         float rot = 0f;
+        //对外显示的
+        public String meshPath = "";
+        public String texturePath = "../../TestData/texture.jpg";
 
-        DrawInfo drawInfo;
-        bool isDrawing = false;
-        
         public Form1()
         {
             InitializeComponent();
@@ -87,7 +91,7 @@ namespace SoftRenderer
 
         void SetUpGameObjects()
         {
-            rot += 0.05f;
+            //rot += 0.05f;
             for( int i = 0; i < gameObjects.Count; ++i )
             {
                 GameObject gameObject = gameObjects[i];
@@ -110,12 +114,14 @@ namespace SoftRenderer
         {
             //default GameObject
             GameObject gameObject = new GameObject();
+            gameObjects.Add(gameObject);
             Transform transform = gameObject.transform;
             gameObject.transform.position = Vector3.Zero;
             gameObject.transform.eulerAngles = Vector3.Zero;
             gameObject.transform.scale = Vector3.One;
             gameObject.meshObj = Test.CubeTestData.ToWavefrontObject();
-            gameObjects.Add(gameObject);
+            Texture texture = Texture.FromFile(texturePath);
+            gameObject.texture = texture;
 
             //default Camera
 
@@ -135,7 +141,7 @@ namespace SoftRenderer
             }
             isDrawing = true;
             renderer.Clear();
-            renderer.SetUpCamera(drawInfo);
+            renderer.SetUpCameraAndContext(drawInfo);
             renderer.DrawAll(gameObjects);
             renderer.Present();
             isDrawing = false;

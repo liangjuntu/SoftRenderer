@@ -12,6 +12,9 @@ namespace SoftRenderer
     public class Rasterizer
     {
         Context context;
+
+        public Shader shader;
+
         public Rasterizer(Context c)
         {
             context = c;
@@ -330,7 +333,7 @@ namespace SoftRenderer
                     {
                         continue;
                     }
-                    context.depthBuffer[x, y] = depth;
+                    
                     
                     //插值UV等顶点属性
                     float fInvW = w0 * v0.position.W + w1 * v1.position.W + w2 * v2.position.W;
@@ -341,8 +344,29 @@ namespace SoftRenderer
 
                     Vector4 color = w0 * v0.color + w1 * v1.color + w2 * v2.color;
                     color *= Z_Eye;
-                    Color col = Utils.VectorToColor(color);
 
+                    Color col = Utils.VectorToColor(color);
+                    if(shader != null)
+                    {
+                        VSOutput fragment = new VSOutput();
+                        //v.position = 
+                        //v.normal = 
+                        fragment.texcoord = uv;
+                        fragment.color = color;
+
+                        PSOutput OUT = shader.FragShader(fragment);
+                        if(OUT.isDiscard)
+                        {
+                            continue;
+                        }
+                        col = Utils.VectorToColor(OUT.color);
+                    }
+                    else
+                    {
+                        col = Utils.VectorToColor(color);
+                    }
+                    
+                    context.depthBuffer[x, y] = depth;
                     DrawPixel(x, y, col);
                 }
 

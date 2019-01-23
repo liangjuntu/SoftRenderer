@@ -58,6 +58,7 @@
     <Compile Include="Renderer\Base\GameObject.cs" />
     <Compile Include="Renderer\Base\Shader.cs" />
     <Compile Include="Renderer\Base\Statics.cs" />
+    <Compile Include="Renderer\Base\Texture.cs" />
     <Compile Include="Renderer\Base\Transform.cs" />
     <Compile Include="Renderer\Base\Vertex.cs" />
     <Compile Include="Renderer\Context.cs" />
@@ -93,5 +94,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Content Include="TestData\texture.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

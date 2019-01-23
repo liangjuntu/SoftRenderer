@@ -42,4 +42,16 @@ namespace SoftRenderer
 
         //Other Attributes
     }
+
+    public class PSOutput
+    {
+        public bool isDiscard { get; set; }
+        public Vector4 color { get; set; }
+
+        public PSOutput()
+        {
+            isDiscard = false;
+            color = new Vector4(0, 0, 0, 1);
+        }
+    }
 }

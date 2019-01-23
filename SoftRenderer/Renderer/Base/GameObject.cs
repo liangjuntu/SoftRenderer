@@ -10,6 +10,7 @@ namespace SoftRenderer
     {
         public Transform transform = new Transform();
         public Games.WavefrontObject meshObj;
+        public Texture texture;
 
     }
 }

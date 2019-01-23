@@ -250,6 +250,10 @@ namespace SoftRenderer
             Matrix4x4 modelMatrix = transform.ModelToWorld;
             shader.SetModelMatrix(modelMatrix);
 
+            Texture texture = gameobject.texture;
+            shader.texture = texture;
+            rasterizer.shader = shader;
+
             WavefrontObject meshObj = gameobject.meshObj;
 
             foreach( var faceGroup in meshObj.Groups)
@@ -280,9 +284,10 @@ namespace SoftRenderer
                 }
 
             }
-            
 
-            
+            rasterizer.shader = null;
+
+
 
         }
 
@@ -296,6 +301,8 @@ namespace SoftRenderer
 
                 shaderContext.SetViewProjectionMatrix(viewMatrix, projectionMatrix);
 
+                shaderContext.textureFilterMode = context.textureFilterMode;
+
                 Shader shader = new Shader(shaderContext);
 
 
@@ -306,7 +313,7 @@ namespace SoftRenderer
             }
         }
 
-        public void SetUpCamera(DrawInfo drawInfo)
+        public void SetUpCameraAndContext(DrawInfo drawInfo)
         {
             Transform transform = camera.transform;
             transform.position = drawInfo.cameraPosition;
@@ -315,7 +322,9 @@ namespace SoftRenderer
             camera.Far = drawInfo.CameraFar;
             camera.Fov = drawInfo.CameraFov;
             camera.Aspect = (float)context.frameSize.Width / (float)context.frameSize.Height;
+
             context.clearColor = drawInfo.CameraClearColor;
+            context.textureFilterMode = drawInfo.textureFilterMode;
         }
 
        

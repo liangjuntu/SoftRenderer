@@ -24,6 +24,7 @@ namespace SoftRenderer
 
         public Color clearColor = Color.White;
         public DrawMode drawMode = DrawMode.Normal;
+        public TextureFilterMode textureFilterMode { get; set; }
 
         public Context(Size size)
         {

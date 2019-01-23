@@ -61,6 +61,7 @@
     <Compile Include="Renderer\Base\Transform.cs" />
     <Compile Include="Renderer\Base\Vertex.cs" />
     <Compile Include="Renderer\Context.cs" />
+    <Compile Include="Renderer\DrawInfo.cs" />
     <Compile Include="Renderer\Rasterizer.cs" />
     <Compile Include="Renderer\Renderer.cs" />
     <Compile Include="Renderer\ThirdParty\CubeTestData.cs" />

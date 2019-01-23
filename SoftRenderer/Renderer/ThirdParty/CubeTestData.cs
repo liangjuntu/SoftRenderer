@@ -128,6 +128,12 @@ namespace SoftRenderer.Test
                 obj.Texcoords.Add(uv);
 
             }
+            for (int i = 0; i < CubeTestData.vertColors.Length; ++i)
+            {
+                Vector4 color = new Vector4(CubeTestData.vertColors[i],1);
+                obj.Colors.Add(color);
+            }
+
             //处理三角形
             WavefrontFaceGroup faceGroup = new WavefrontFaceGroup();
             obj.Groups.Add(faceGroup);
@@ -141,6 +147,9 @@ namespace SoftRenderer.Test
                 WavefrontVertex v0 = new WavefrontVertex(index0, index0, index0);
                 WavefrontVertex v1 = new WavefrontVertex(index1, index1, index1);
                 WavefrontVertex v2 = new WavefrontVertex(index2, index2, index2);
+                v0.Color = index0;
+                v1.Color = index1;
+                v2.Color = index2;
                 face.Vertices.Add(v0);
                 face.Vertices.Add(v1);
                 face.Vertices.Add(v2);

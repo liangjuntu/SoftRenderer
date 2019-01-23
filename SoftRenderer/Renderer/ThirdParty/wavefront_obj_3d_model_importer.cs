@@ -304,12 +304,16 @@ namespace Games
             Positions = new List<Vector3>();
             Texcoords = new List<Vector2>();
             Normals = new List<Vector3>();
+            //自己加的颜色
+            Colors = new List<Vector4>();
         }
 
         // Lists containing the vertex components
         public List<Vector3> Positions { get; private set; }
         public List<Vector2> Texcoords { get; private set; }
         public List<Vector3> Normals { get; private set; }
+
+        public List<Vector4> Colors { get; private set; }
 
         // List of sub meshes
         public List<WavefrontFaceGroup> Groups { get; private set; }
@@ -404,5 +408,7 @@ namespace Games
         public int Position { get; set; }
         public int Normal { get; set; }
         public int Texcoord { get; set; }
+        //自己加的顶点颜色
+        public int Color { get; set; }
     }
 }

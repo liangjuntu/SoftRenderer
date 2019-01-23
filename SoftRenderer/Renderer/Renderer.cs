@@ -16,7 +16,7 @@ namespace SoftRenderer
     {
         Statics statics;
         Graphics graphics;
-        public Context context;
+        Context context;
         Rasterizer rasterizer;
         public Camera camera { protected set; get; }
        
@@ -58,15 +58,21 @@ namespace SoftRenderer
 
         public void Clear()
         {
-            context.ClearFrameBuffer();
             statics.Clear();
+            lock (context.frameBuffer)
+            {
+                context.ClearFrameBuffer();
+            }
         }
 
 
         public void Present()
         {
             //画上去
-            graphics.DrawImage(context.frameBuffer, 0, 0);
+            lock (context.frameBuffer)
+            {
+                graphics.DrawImage(context.frameBuffer, 0, 0);
+            }
         }
         
 
@@ -282,7 +288,7 @@ namespace SoftRenderer
 
         public void DrawAll(List<GameObject> gameobjes)
         {
-            //lock (context.frameBuffer)
+            lock (context.frameBuffer)
             {
                 Matrix4x4 viewMatrix = camera.ViewMatrix;
                 Matrix4x4 projectionMatrix = camera.ProjectionMatrix;
@@ -300,16 +306,16 @@ namespace SoftRenderer
             }
         }
 
-        public void SetUpCamera(Vector3 position, Vector3 eulerAngles, float near, float far, float fov, Color clearColor)
+        public void SetUpCamera(DrawInfo drawInfo)
         {
             Transform transform = camera.transform;
-            transform.position = position;
-            transform.eulerAngles = eulerAngles;
-            camera.Near = near;
-            camera.Far = far;
-            camera.Fov = fov;
+            transform.position = drawInfo.cameraPosition;
+            transform.eulerAngles = drawInfo.cameraEulerAngles;
+            camera.Near = drawInfo.CameraNear;
+            camera.Far = drawInfo.CameraFar;
+            camera.Fov = drawInfo.CameraFov;
             camera.Aspect = (float)context.frameSize.Width / (float)context.frameSize.Height;
-            context.clearColor = clearColor;
+            context.clearColor = drawInfo.CameraClearColor;
         }
 
        

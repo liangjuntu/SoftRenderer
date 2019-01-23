@@ -22,8 +22,13 @@ namespace SoftRenderer
             vertex.position = new Vector4(obj.Positions[v.Position], 1f);
             vertex.normal = new Vector4(obj.Normals[v.Normal], 0f);
             vertex.texcoord = obj.Texcoords[v.Texcoord];
-            vertex.color = new Vector4(vertex.texcoord.X, vertex.texcoord.Y, 0, 1);
-            //vertex.color = new Vector4(1, 1, 1, 1);
+            if(v.Color >= 0 && v.Color < obj.Colors.Count)
+            {
+                vertex.color = obj.Colors[v.Color];
+            } else
+            {
+                vertex.color = Vector4.One;
+            }
             return vertex;
         }
     }

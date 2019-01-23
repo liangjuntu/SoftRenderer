@@ -14,35 +14,43 @@ namespace SoftRenderer
     public partial class Form1 : Form
     {
 
+        public enum MeshType
+        {
+            TestCube,
+            WaveFrontObj,
+        }
+
         Graphics form1Graphics;
         Renderer renderer;
         List<GameObject> gameObjects;
-        System.Timers.Timer timer;
+        //System.Timers.Timer timer;
+        //用下面这个Timer，是单线程的，上面的是多线程
+        System.Windows.Forms.Timer timer;
 
         float FPS = 30f;
         float rot = 0f;
 
-
-        //摄像机
-        //public Vector3 cameraPosition = new Vector3(0, 1, -5f);
-        public Vector3 cameraPosition = new Vector3(0, 0, -5f);
-        public Vector3 cameraEulerAngles = new Vector3(0, 0, 0);
-        public float CameraNear = 1f;
-        public float CameraFar = 10f;
-        public float CameraFov = 60f;
-        public Color CameraClearColor = Color.Black;
-
+        DrawInfo drawInfo;
+        bool isDrawing = false;
+        
         public Form1()
         {
             InitializeComponent();
             form1Graphics = this.CreateGraphics();
             renderer = new Renderer(form1Graphics);
             gameObjects = new List<GameObject>();
-            timer = new System.Timers.Timer(1000f / FPS);
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(FrameUpdate);
-            timer.AutoReset = true;
+            //timer = new System.Timers.Timer(1000f / FPS);
+            //timer.Elapsed += new System.Timers.ElapsedEventHandler(FrameUpdate);
+            //timer.AutoReset = true;
+            //timer.Enabled = true;
+            //timer.Start();
+
+            drawInfo = new DrawInfo();
+            timer = new System.Windows.Forms.Timer(); 
             timer.Enabled = true;
+            timer.Interval = (int)(1000f / FPS);
             timer.Start();
+            timer.Tick += FrameUpdate;
 
             InitDefault();
         }
@@ -113,16 +121,30 @@ namespace SoftRenderer
 
         }
 
-        void FrameUpdate(object sender, EventArgs e)
+        void PreUpdate()
         {
             SetUpGameObjects();
-            lock (renderer.context.frameBuffer)
+        }
+
+        void DoUpdate()
+        {
+            if (isDrawing)
             {
-                renderer.Clear();
-                renderer.SetUpCamera(cameraPosition, cameraEulerAngles, CameraNear, CameraFar, CameraFov, CameraClearColor);
-                renderer.DrawAll(gameObjects);
-                renderer.Present();
+                //TODO Log Error
+                return;
             }
+            isDrawing = true;
+            renderer.Clear();
+            renderer.SetUpCamera(drawInfo);
+            renderer.DrawAll(gameObjects);
+            renderer.Present();
+            isDrawing = false;
+        }
+
+        void FrameUpdate(object sender, EventArgs e)
+        {
+            PreUpdate();
+            DoUpdate();
         }
 
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Numerics;
 
 namespace SoftRenderer
 {
@@ -72,6 +73,58 @@ namespace SoftRenderer
         public static float Degree2Radian(float degree)
         {
             return (float)((Math.PI / 180f) * degree);
+        }
+
+        public static float Radian2Degree(float radian)
+        {
+            float degree = (float) (180f / Math.PI) * radian;
+            degree %= 360f;
+            if(degree < 0)
+            {
+                degree += 360f;
+            }
+            return degree;
+        }
+
+        //angle是角度/不是弧度
+        public static Vector3 QuaternionToEulerAngles(Quaternion q)
+        {
+            float x = q.X; float y = q.Y; float z = q.Z; float w = q.W;
+            float a, b, r;
+
+            const float Epsilon = 0.0009765625f;
+            float minus_m23 = 2 * (x * w - y * z);
+            //sin(beta) = -m23
+            if( Math.Abs(minus_m23 - (-1)) <= Epsilon )
+            {
+                //beta = -pi/2的情况;sin(beta) = -1;cos(beta) = 0;
+                b = (float) -Math.PI / 2;
+                r = 0;
+                float minus_m12 = -2 * (x * y - z * w);
+                float m11 = 1 - 2 * (y * y + z * z);
+                a = (float)Math.Atan2(minus_m12, m11);
+
+            } else if( Math.Abs(minus_m23 - 1) <= Epsilon)
+            {
+                //beta = pi/2的情况;sin(beta) = 1;cos(beta) = 0;
+                b = (float)Math.PI / 2;
+                r = 0;
+                float m12 = 2 * (x * y - z * w);
+                float m11 = 1 - 2 * (y * y + z * z);
+                a = (float)Math.Atan2(m12, m11);
+            } else
+            {
+                a = (float)Math.Atan2(2 * (x * z + y * w), 1 - 2 * (x * x + y * y));
+                b = (float)Math.Asin(2 * (x * w - y * z));
+                r = (float)Math.Atan2(2 * (x * y + z * w), 1 - 2 * (x * x + z * z));
+            }
+
+            float angleX = Radian2Degree(b);
+            float angleY = Radian2Degree(a);
+            float angleZ = Radian2Degree(r);
+            return new Vector3(angleX, angleY, angleZ);
+
+
         }
         
     }

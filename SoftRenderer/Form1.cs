@@ -89,9 +89,39 @@ namespace SoftRenderer
             SoftRenderer.Utils.DrawCenterRect(form1Graphics);
         }
 
+        void TestRotation()
+        {
+            Vector3 eulerAngles = new Vector3(30f, 40f, 50f);
+            float radX = Utils.Degree2Radian(eulerAngles.X);
+            float radY = Utils.Degree2Radian(eulerAngles.Y);
+            float radZ = Utils.Degree2Radian(eulerAngles.Z);
+            Quaternion q = Quaternion.CreateFromYawPitchRoll(radY, radX, radZ);
+            Matrix4x4 m = Matrix4x4.CreateFromQuaternion(q);
+            m = Matrix4x4.Transpose(m);
+            Vector3 angles = Utils.QuaternionToEulerAngles(q);
+            Console.WriteLine(String.Format("q:{0}", q));
+            Console.WriteLine(String.Format("m:{0}", m));
+            Console.WriteLine(String.Format("angles:{0}", angles));
+        }
+
+        void TestEulerAngles()
+        {
+            Vector3 eulerAngles = new Vector3(-90f, 50f, 20f);
+            float radX = Utils.Degree2Radian(eulerAngles.X);
+            float radY = Utils.Degree2Radian(eulerAngles.Y);
+            float radZ = Utils.Degree2Radian(eulerAngles.Z);
+            Quaternion q = Quaternion.CreateFromYawPitchRoll(radY, radX, radZ);
+            Vector3 angles = Utils.QuaternionToEulerAngles(q);
+            Console.WriteLine(String.Format("angles:{0}", angles));
+
+        }
+
         void SetUpGameObjects()
         {
-            //rot += 0.05f;
+            //如果用欧拉角做旋转矩阵旋转可能会有gimbal lock(万向锁)的问题https://www.cnblogs.com/psklf/p/5656938.html
+            rot += 1f;
+            rot %= 360f;
+            
             for( int i = 0; i < gameObjects.Count; ++i )
             {
                 GameObject gameObject = gameObjects[i];
@@ -129,6 +159,8 @@ namespace SoftRenderer
 
         void PreUpdate()
         {
+            //TestRotation();
+            //TestEulerAngles();
             SetUpGameObjects();
         }
 

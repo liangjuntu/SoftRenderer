@@ -15,11 +15,13 @@ namespace SoftRenderer.Test
     {
         //顶点坐标
         public static Vector3[] pointList = {
+            //近面
                                             new Vector3(-1,  1, -1),
                                             new Vector3(-1, -1, -1),
                                             new Vector3(1, -1, -1),
                                             new Vector3(1, 1, -1),
 
+                                            //远面
                                             new Vector3( -1,  1, 1),
                                             new Vector3(-1, -1, 1),
                                             new Vector3(1, -1, 1),
@@ -141,12 +143,15 @@ namespace SoftRenderer.Test
             {
                 WavefrontFace face = new WavefrontFace();
                 faceGroup.Faces.Add(face);
-                int index0 = CubeTestData.indexs[i];
-                int index1 = CubeTestData.indexs[i+1];
-                int index2 = CubeTestData.indexs[i+2];
-                WavefrontVertex v0 = new WavefrontVertex(index0, index0, index0);
-                WavefrontVertex v1 = new WavefrontVertex(index1, index1, index1);
-                WavefrontVertex v2 = new WavefrontVertex(index2, index2, index2);
+                int index0 = i;
+                int index1 = i+1;
+                int index2 = i+2;
+                int p0 = CubeTestData.indexs[i];
+                int p1 = CubeTestData.indexs[i+1];
+                int p2 = CubeTestData.indexs[i+2];
+                WavefrontVertex v0 = new WavefrontVertex(p0, index0, index0);
+                WavefrontVertex v1 = new WavefrontVertex(p1, index1, index1);
+                WavefrontVertex v2 = new WavefrontVertex(p2, index2, index2);
                 v0.Color = index0;
                 v1.Color = index1;
                 v2.Color = index2;

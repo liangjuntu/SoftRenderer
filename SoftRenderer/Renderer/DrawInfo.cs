@@ -17,5 +17,7 @@ namespace SoftRenderer
         public float CameraFov = 60f;
         public Color CameraClearColor = Color.Black;
         public TextureFilterMode textureFilterMode = TextureFilterMode.Point;
+        //public DrawMode drawMode = DrawMode.Normal;
+        public DrawMode drawMode = DrawMode.Wireframe;
     }
 }

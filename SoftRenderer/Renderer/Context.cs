@@ -22,9 +22,10 @@ namespace SoftRenderer
         public Graphics frameGraphics; //frameBuffer对应的Graphics
         public float[,] depthBuffer;
 
-        public Color clearColor = Color.White;
+        public Color clearColor = Color.Black;
         public DrawMode drawMode = DrawMode.Normal;
         public TextureFilterMode textureFilterMode { get; set; }
+        public Color wireframeColor = Color.White;
 
         public Context(Size size)
         {

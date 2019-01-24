@@ -373,10 +373,26 @@ namespace SoftRenderer
             }
         }
 
-        public void DrawLine(VSOutput v0, VSOutput v1)
+        public void DrawLine(VSOutput v0, VSOutput v1, Color color)
         {
-            //TODO
+            Vector2 p0 = new Vector2(v0.position.X, v0.position.Y);
+            Vector2 p1 = new Vector2(v1.position.X, v1.position.Y);
+            bool accept = CohenSutherlandLineClip(ref p0, ref p1);
+            if (!accept)
+            {
+                return;
+            }
+            BresenhamDrawLine(p0, p1, color);
         }
+
+        void DrawWireframe(VSOutput v0, VSOutput v1, VSOutput v2)
+        {
+            DrawLine(v0, v1, context.wireframeColor);
+            DrawLine(v1, v2, context.wireframeColor);
+            DrawLine(v2, v0, context.wireframeColor);
+        }
+
+        
 
         public void DrawTriangle(VSOutput v0, VSOutput v1, VSOutput v2)
         {
@@ -388,6 +404,7 @@ namespace SoftRenderer
                 case DrawMode.Depth:
                     break;
                 case DrawMode.Wireframe:
+                    DrawWireframe(v0, v1, v2);
                     break;
             }
         }

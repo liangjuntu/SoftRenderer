@@ -325,6 +325,7 @@ namespace SoftRenderer
 
             context.clearColor = drawInfo.CameraClearColor;
             context.textureFilterMode = drawInfo.textureFilterMode;
+            context.drawMode = drawInfo.drawMode;
         }
 
        

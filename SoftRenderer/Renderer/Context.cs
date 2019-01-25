@@ -70,7 +70,8 @@ namespace SoftRenderer
 
         public void ClearFrameBuffer()
         {
-            frameGraphics.Clear(clearColor);
+            Color col = drawMode == DrawMode.Depth ? Color.White : clearColor;
+            frameGraphics.Clear(col);
             for (int i = 0; i < frameSize.Width; i++)
             {
                 for(int j = 0; j < frameSize.Height; ++ j)

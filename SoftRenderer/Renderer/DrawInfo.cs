@@ -20,6 +20,7 @@ namespace SoftRenderer
         public TextureFilterMode textureFilterMode = TextureFilterMode.Point;
         public DrawMode drawMode = DrawMode.Normal;
         //public DrawMode drawMode = DrawMode.Wireframe;
+        //public DrawMode drawMode = DrawMode.Depth;
         public CullMode cullMode = CullMode.None;
         //public CullMode cullMode = CullMode.Back;
         public Winding winding = Winding.CounterClockwise;

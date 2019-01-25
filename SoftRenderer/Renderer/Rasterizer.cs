@@ -339,37 +339,46 @@ namespace SoftRenderer
                     {
                         continue;
                     }
-                    
-                    
-                    //插值UV等顶点属性
-                    float fInvW = w0 * v0.position.W + w1 * v1.position.W + w2 * v2.position.W;
-                    //由于position.W是1/W = 1/-Z_Eye
-                    float Z_Eye = 1f / fInvW;
-                    Vector2 uv = w0 * v0.texcoord + w1 * v1.texcoord + w2 * v2.texcoord;
-                    uv *= Z_Eye;
 
-                    Vector4 color = w0 * v0.color + w1 * v1.color + w2 * v2.color;
-                    color *= Z_Eye;
-
-                    Color col = Utils.VectorToColor(color);
-                    if(shader != null)
+                    Color col;
+                    if (context.drawMode == DrawMode.Depth)
                     {
-                        VSOutput fragment = new VSOutput();
-                        //v.position = 
-                        //v.normal = 
-                        fragment.texcoord = uv;
-                        fragment.color = color;
-
-                        PSOutput OUT = shader.FragShader(fragment);
-                        if(OUT.isDiscard)
-                        {
-                            continue;
-                        }
-                        col = Utils.VectorToColor(OUT.color);
+                        Vector4 depthColor = new Vector4(depth, depth, depth, 1);
+                        col = Utils.VectorToColor(depthColor);
                     }
                     else
                     {
-                        col = Utils.VectorToColor(color);
+                        //正常渲染
+
+                        //插值UV等顶点属性
+                        float fInvW = w0 * v0.position.W + w1 * v1.position.W + w2 * v2.position.W;
+                        //由于position.W是1/W = 1/-Z_Eye
+                        float Z_Eye = 1f / fInvW;
+                        Vector2 uv = w0 * v0.texcoord + w1 * v1.texcoord + w2 * v2.texcoord;
+                        uv *= Z_Eye;
+
+                        Vector4 color = w0 * v0.color + w1 * v1.color + w2 * v2.color;
+                        color *= Z_Eye;
+
+                        if (shader != null)
+                        {
+                            VSOutput fragment = new VSOutput();
+                            //v.position = 
+                            //v.normal = 
+                            fragment.texcoord = uv;
+                            fragment.color = color;
+
+                            PSOutput OUT = shader.FragShader(fragment);
+                            if (OUT.isDiscard)
+                            {
+                                continue;
+                            }
+                            col = Utils.VectorToColor(OUT.color);
+                        }
+                        else
+                        {
+                            col = Utils.VectorToColor(color);
+                        }
                     }
                     
                     context.depthBuffer[x, y] = depth;
@@ -405,9 +414,8 @@ namespace SoftRenderer
             switch(context.drawMode)
             {
                 case DrawMode.Normal:
-                    BarycentricRasterizeTriangle(v0, v1, v2);
-                    break;
                 case DrawMode.Depth:
+                    BarycentricRasterizeTriangle(v0, v1, v2);
                     break;
                 case DrawMode.Wireframe:
                     DrawWireframe(v0, v1, v2);

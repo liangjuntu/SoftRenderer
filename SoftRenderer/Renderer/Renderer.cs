@@ -214,9 +214,13 @@ namespace SoftRenderer
             v2.position = new Vector4(0.5f, -0.5f, -1f, 1f);
             v2.color = new Vector4(0f, 0f, 1f, 1f);
             
-            v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
-            v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
-            v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
+            v0 = Rasterizer.PerspectiveDivide(v0);
+            v0 = rasterizer.ViewportTransform(v0);
+            v1 = Rasterizer.PerspectiveDivide(v1);
+            v1 = rasterizer.ViewportTransform(v1);
+            v2 = Rasterizer.PerspectiveDivide(v2);
+            v2 = rasterizer.ViewportTransform(v2);
+
             rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
 
             //测试depth test
@@ -224,18 +228,24 @@ namespace SoftRenderer
             v0.position = new Vector4(-0.5f, 0.5f, -1f, 1f);
             v1.position = new Vector4(-2f, -1f, 1f, 2f);
             v2.position = new Vector4(0f, -2f, 1f, 2f);
-            v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
-            v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
-            v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
+            v0 = Rasterizer.PerspectiveDivide(v0);
+            v0 = rasterizer.ViewportTransform(v0);
+            v1 = Rasterizer.PerspectiveDivide(v1);
+            v1 = rasterizer.ViewportTransform(v1);
+            v2 = Rasterizer.PerspectiveDivide(v2);
+            v2 = rasterizer.ViewportTransform(v2);
             rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
 
             //第三个三角形，v1绿在近，其他在远平面
             v0.position = new Vector4(-2f, 0f, 1f, 2f);
             v1.position = new Vector4(-0.5f, -1f, -1f, 1f);
             v2.position = new Vector4(0f, -1f, 1f, 2f);
-            v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
-            v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
-            v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
+            v0 = Rasterizer.PerspectiveDivide(v0);
+            v0 = rasterizer.ViewportTransform(v0);
+            v1 = Rasterizer.PerspectiveDivide(v1);
+            v1 = rasterizer.ViewportTransform(v1);
+            v2 = Rasterizer.PerspectiveDivide(v2);
+            v2 = rasterizer.ViewportTransform(v2);
             rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
         }
 
@@ -283,7 +293,13 @@ namespace SoftRenderer
                     Debug.Assert(face.Vertices.Count > 2);
                     Vertex vertex0 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[0]);
                     VSOutput vClip0 = shader.VertShader(vertex0);
-                    VSOutput vNDC0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(vClip0);
+                    //TODO 做Clipping
+                    VSOutput vNDC0 = Rasterizer.PerspectiveDivide(vClip0);
+                    if(vNDC0 == null)
+                    {
+                        continue;
+                    }
+                    VSOutput vScreen0 = rasterizer.ViewportTransform(vNDC0);
                     context.statics.vertexCount += 1;
 
                     for ( int i = 1; i+1 < face.Vertices.Count; i+=2)
@@ -299,11 +315,17 @@ namespace SoftRenderer
                             continue;
                         }
                         
-                        VSOutput vNDC1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(vClip1);
-                        VSOutput vNDC2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(vClip2);
+                        VSOutput vNDC1 = Rasterizer.PerspectiveDivide(vClip1);
+                        VSOutput vNDC2 = Rasterizer.PerspectiveDivide(vClip2);
+                        if(vNDC1 == null || vNDC2 == null)
+                        {
+                            continue;
+                        }
+                        VSOutput vScreen1 = rasterizer.ViewportTransform(vNDC1);
+                        VSOutput vScreen2 = rasterizer.ViewportTransform(vNDC2);
                         
                         context.statics.triangleCount += 1;
-                        rasterizer.DrawTriangle(vNDC0, vNDC1, vNDC2);
+                        rasterizer.RasterizeTriangle(vScreen0, vScreen1, vScreen2);
                     } 
                 }
 

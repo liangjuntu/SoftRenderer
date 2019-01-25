@@ -41,6 +41,13 @@ namespace SoftRenderer
         public Vector4 color { get; set; }
 
         //Other Attributes
+        public void Clone(VSOutput other)
+        {
+            this.position = other.position;
+            this.normal = other.normal;
+            this.texcoord = other.texcoord;
+            this.color = other.color;
+        }
     }
 
     public class PSOutput

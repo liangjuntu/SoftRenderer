@@ -13,9 +13,24 @@ namespace SoftRenderer
         Wireframe,
         Depth
     }
+    
+    public enum CullMode
+    {
+        None,
+        Back,
+        //Front
+    }
+
+    public enum Winding
+    {
+        Clockwise,
+        CounterClockwise,
+    }
 
     public class Context
     {
+        public Statics statics { get; private set; }
+
         //Frame Buffer相关
         public Size frameSize;
         public Bitmap frameBuffer; //帧缓冲
@@ -26,10 +41,13 @@ namespace SoftRenderer
         public DrawMode drawMode = DrawMode.Normal;
         public TextureFilterMode textureFilterMode { get; set; }
         public Color wireframeColor = Color.White;
+        public Winding winding = Winding.CounterClockwise;
+        public CullMode cullMode = CullMode.None;
 
         public Context(Size size)
         {
             frameSize = size;
+            statics = new Statics();
             InitBySize();
         }
 

@@ -31,10 +31,10 @@ namespace SoftRenderer
         {
             Size frameSize = context.frameSize;
             Bitmap frameBuffer = context.frameBuffer;
-            Debug.Assert(0 <= p1.X && p1.X < frameSize.Width);
-            Debug.Assert(0 <= p1.Y && p1.Y < frameSize.Height);
-            Debug.Assert(0 <= p2.X && p2.X < frameSize.Width);
-            Debug.Assert(0 <= p2.Y && p2.Y < frameSize.Height);
+            Debug.Assert(0 <= p1.X && p1.X <= frameSize.Width);
+            Debug.Assert(0 <= p1.Y && p1.Y <= frameSize.Height);
+            Debug.Assert(0 <= p2.X && p2.X <= frameSize.Width);
+            Debug.Assert(0 <= p2.Y && p2.Y <= frameSize.Height);
 
             //由于是像素，所以把输入转成整数
             int x1 = (int)p1.X;
@@ -242,7 +242,7 @@ namespace SoftRenderer
             return CohenSutherlandLineClip(ref p0, ref p1, min, max);
         }
 
-        float EdgeFunction(Vector2 a, Vector2 b, Vector2 c)
+        public static float EdgeFunction(Vector2 a, Vector2 b, Vector2 c)
         {
             return (c.X - a.X) * (b.Y - a.Y) - (c.Y - a.Y) * (b.X - a.X);
         }
@@ -265,15 +265,17 @@ namespace SoftRenderer
         }
 
         //做透视除法和转到ViewPort变换
-        public VSOutput PerspectiveDivideAndViewportTransformVertex(VSOutput v)
+        public VSOutput PerspectiveDivideAndViewportTransformVertex(VSOutput vClip)
         {
+            VSOutput vNDC = new VSOutput();
             const float FLT_EPSILON = 1.192092896e-07F; // smallest such that 1.0+FLT_EPSILON != 1.0
-            if (v.position.W <= FLT_EPSILON)
+            if (vClip.position.W <= FLT_EPSILON)
             {
-                return v;
+                vNDC.Clone(vClip);
+                return vNDC;
             }
 
-            Vector4 position = v.position;
+            Vector4 position = vClip.position;
 
             float fInvW = 1 / position.W;
             position = new Vector4(position.X * fInvW, position.Y * fInvW, position.Z * fInvW, 1) ;
@@ -283,15 +285,16 @@ namespace SoftRenderer
             int height = context.frameBuffer.Height;
             float x = (position.X + 1) * 0.5f;
             float y = (1 - position.Y) * 0.5f;
+            //把z从[-1,1]转到[0,1]
+            float z = (position.Z + 1) * 0.5f;
 
-            v.position = new Vector4(x*width, y*height, position.Z , fInvW);
+            vNDC.position = new Vector4(x*width, y*height, z , fInvW);
 
-            //TODO 改成01的Color
-            v.color *= fInvW;
-            v.texcoord *= fInvW;
-            v.normal *= fInvW;
+            vNDC.color = vClip.color * fInvW;
+            vNDC.texcoord = vClip.texcoord * fInvW;
+            vNDC.normal = vClip.normal * fInvW;
 
-            return v;
+            return vNDC;
         }
 
         public void BarycentricRasterizeTriangle(VSOutput v0, VSOutput v1, VSOutput v2)
@@ -326,6 +329,9 @@ namespace SoftRenderer
                         //像素点不在三角形内
                         continue;
                     }
+
+                    context.statics.fragmentCount += 1;
+
 
                     //深度测试
                     float depth = w0 * v0.position.Z + w1 * v1.position.Z + w2 * v2.position.Z;

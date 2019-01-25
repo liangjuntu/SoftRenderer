@@ -10,6 +10,7 @@ namespace SoftRenderer
 {
     public class DrawInfo
     {
+        //public Vector3 cameraPosition = new Vector3(0, 1, -5f);
         public Vector3 cameraPosition = new Vector3(0, 0, -5f);
         public Vector3 cameraEulerAngles = new Vector3(0, 0, 0);
         public float CameraNear = 1f;
@@ -17,7 +18,10 @@ namespace SoftRenderer
         public float CameraFov = 60f;
         public Color CameraClearColor = Color.Black;
         public TextureFilterMode textureFilterMode = TextureFilterMode.Point;
-        //public DrawMode drawMode = DrawMode.Normal;
-        public DrawMode drawMode = DrawMode.Wireframe;
+        public DrawMode drawMode = DrawMode.Normal;
+        //public DrawMode drawMode = DrawMode.Wireframe;
+        public CullMode cullMode = CullMode.None;
+        //public CullMode cullMode = CullMode.Back;
+        public Winding winding = Winding.CounterClockwise;
     }
 }

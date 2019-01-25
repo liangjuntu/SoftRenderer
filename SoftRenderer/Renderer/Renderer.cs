@@ -14,7 +14,6 @@ namespace SoftRenderer
 
     public class Renderer
     {
-        Statics statics;
         Graphics graphics;
         Context context;
         Rasterizer rasterizer;
@@ -35,7 +34,7 @@ namespace SoftRenderer
             context = new Context(frameSize);
             rasterizer = new Rasterizer(context);
             camera = new Camera();
-            statics = new Statics();
+            
         }
 
         void InitByGraphics(Graphics g)
@@ -58,7 +57,7 @@ namespace SoftRenderer
 
         public void Clear()
         {
-            statics.Clear();
+            context.statics.Clear();
             lock (context.frameBuffer)
             {
                 context.ClearFrameBuffer();
@@ -240,10 +239,28 @@ namespace SoftRenderer
             rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
         }
 
+        bool BackfaceCulling(VSOutput v0, VSOutput v1, VSOutput v2)
+        {
+            if(context.cullMode == CullMode.None)
+            {
+                return true;
+            }
+            //cull back
+            Vector2 p0 = new Vector2(v0.position.X, v0.position.Y);
+            Vector2 p1 = new Vector2(v1.position.X, v1.position.Y);
+            Vector2 p2 = new Vector2(v2.position.X, v2.position.Y);
+            float area = Rasterizer.EdgeFunction(p0, p1, p2);
+            //在Clip Space, area >= 0表示顺时针
+            if (context.winding == Winding.Clockwise)
+            {
+                return area >= 0;
+            }
+            return area <= 0;
+        }
 
         public void DrawGameObject(GameObject gameobject, Shader shader)
         {
-            statics.meshCount += 1;
+            context.statics.meshCount += 1;
 
             //设置Shader相关
             Transform transform = gameobject.transform;
@@ -258,28 +275,35 @@ namespace SoftRenderer
 
             foreach( var faceGroup in meshObj.Groups)
             {
-                statics.submeshCount += 1;
+                context.statics.submeshCount += 1;
                 //faceGroup相当于submesh
                 foreach( var face in faceGroup.Faces )
                 {
                     //face为triangle fan;可能会有多个三角形
                     Debug.Assert(face.Vertices.Count > 2);
                     Vertex vertex0 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[0]);
-                    VSOutput v0 = shader.VertShader(vertex0);
-                    v0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v0);
-                    statics.vertexCount += 1;
+                    VSOutput vClip0 = shader.VertShader(vertex0);
+                    VSOutput vNDC0 = rasterizer.PerspectiveDivideAndViewportTransformVertex(vClip0);
+                    context.statics.vertexCount += 1;
 
                     for ( int i = 1; i+1 < face.Vertices.Count; i+=2)
                     {
+                        context.statics.vertexCount += 2;
                         Vertex vertex1 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[i]);
                         Vertex vertex2 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[i+1]);
-                        VSOutput v1 = shader.VertShader(vertex1);
-                        VSOutput v2 = shader.VertShader(vertex2);
-                        v1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v1);
-                        v2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(v2);
-                        statics.vertexCount += 2;
-                        statics.triangleCount += 1;
-                        rasterizer.DrawTriangle(v0, v1, v2);
+
+                        VSOutput vClip1 = shader.VertShader(vertex1);
+                        VSOutput vClip2 = shader.VertShader(vertex2);
+                        if (!BackfaceCulling(vClip0, vClip1, vClip2))
+                        {
+                            continue;
+                        }
+                        
+                        VSOutput vNDC1 = rasterizer.PerspectiveDivideAndViewportTransformVertex(vClip1);
+                        VSOutput vNDC2 = rasterizer.PerspectiveDivideAndViewportTransformVertex(vClip2);
+                        
+                        context.statics.triangleCount += 1;
+                        rasterizer.DrawTriangle(vNDC0, vNDC1, vNDC2);
                     } 
                 }
 
@@ -326,8 +350,19 @@ namespace SoftRenderer
             context.clearColor = drawInfo.CameraClearColor;
             context.textureFilterMode = drawInfo.textureFilterMode;
             context.drawMode = drawInfo.drawMode;
+            context.winding = drawInfo.winding;
+            context.cullMode = drawInfo.cullMode;
         }
 
+        public void DrawStatics()
+        {
+            Font font = new Font("Arial", 16);
+
+            SolidBrush brush = new SolidBrush(Color.White);
+
+            context.frameGraphics.DrawString(String.Format("Mesh:{0}-SubMesh:{1}",context.statics.meshCount,context.statics.submeshCount), font, brush, 20, 20);
+            context.frameGraphics.DrawString(String.Format("vert:{0}-tri:{1}-frag:{2}",context.statics.vertexCount,context.statics.triangleCount, context.statics.fragmentCount), font, brush, 20, 40);
+        }
        
     }
 }

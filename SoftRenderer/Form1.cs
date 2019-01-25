@@ -119,8 +119,8 @@ namespace SoftRenderer
         void SetUpGameObjects()
         {
             //如果用欧拉角做旋转矩阵旋转可能会有gimbal lock(万向锁)的问题https://www.cnblogs.com/psklf/p/5656938.html
-            //rot += 5f;
-            //rot %= 360f;
+            rot += 1f;
+            rot %= 360f;
             
             for( int i = 0; i < gameObjects.Count; ++i )
             {
@@ -175,6 +175,7 @@ namespace SoftRenderer
             renderer.Clear();
             renderer.SetUpCameraAndContext(drawInfo);
             renderer.DrawAll(gameObjects);
+            renderer.DrawStatics();
             renderer.Present();
             isDrawing = false;
         }

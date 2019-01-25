@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Diagnostics;
 using System.Numerics;
+using Games;
 
 namespace SoftRenderer
 {
@@ -264,31 +265,22 @@ namespace SoftRenderer
             return new Vector3(w0, w1, w2);
         }
 
-        //做透视除法和转到ViewPort变换
-        public VSOutput PerspectiveDivideAndViewportTransformVertex(VSOutput vClip)
+        public static VSOutput PerspectiveDivide(VSOutput vClip)
         {
-            VSOutput vNDC = new VSOutput();
             const float FLT_EPSILON = 1.192092896e-07F; // smallest such that 1.0+FLT_EPSILON != 1.0
             if (vClip.position.W <= FLT_EPSILON)
             {
-                vNDC.Clone(vClip);
-                return vNDC;
+                return null;
             }
+
+            VSOutput vNDC = new VSOutput();
 
             Vector4 position = vClip.position;
 
             float fInvW = 1 / position.W;
-            position = new Vector4(position.X * fInvW, position.Y * fInvW, position.Z * fInvW, 1) ;
-            //TODO viewport transform
+            position = new Vector4(position.X * fInvW, position.Y * fInvW, position.Z * fInvW, fInvW) ;
 
-            int width = context.frameBuffer.Width;
-            int height = context.frameBuffer.Height;
-            float x = (position.X + 1) * 0.5f;
-            float y = (1 - position.Y) * 0.5f;
-            //把z从[-1,1]转到[0,1]
-            float z = (position.Z + 1) * 0.5f;
-
-            vNDC.position = new Vector4(x*width, y*height, z , fInvW);
+            vNDC.position = position;
 
             vNDC.color = vClip.color * fInvW;
             vNDC.texcoord = vClip.texcoord * fInvW;
@@ -297,24 +289,46 @@ namespace SoftRenderer
             return vNDC;
         }
 
+        public VSOutput ViewportTransform(VSOutput vNDC)
+        {
+            VSOutput vScreen = new VSOutput();
+            vScreen.Clone(vNDC);
+
+            int width = context.frameBuffer.Width;
+            int height = context.frameBuffer.Height;
+            float x = (vNDC.position.X + 1) * 0.5f;
+            float y = (1 - vNDC.position.Y) * 0.5f;
+            //把z从[-1,1]转到[0,1]
+            float z = (vNDC.position.Z + 1) * 0.5f;
+
+            vScreen.posScreen = new Vector3(x * width, y * height, z);
+            return vScreen;
+
+        }
+
         public void BarycentricRasterizeTriangle(VSOutput v0, VSOutput v1, VSOutput v2)
         {
             int width = context.frameSize.Width;
             int height = context.frameSize.Height;
+            Vector2 xy0 = new Vector2(v0.posScreen.X, v0.posScreen.Y);
+            Vector2 xy1 = new Vector2(v1.posScreen.X, v1.posScreen.Y);
+            Vector2 xy2 = new Vector2(v2.posScreen.X, v2.posScreen.Y);
+            float z0 = v0.posScreen.Z;
+            float z1 = v1.posScreen.Z;
+            float z2 = v2.posScreen.Z;
+            
             //求包围盒
-            float xmin = Math.Min(Math.Min(v0.position.X, v1.position.X), v2.position.X);
-            float xmax = Math.Max(Math.Max(v0.position.X, v1.position.X), v2.position.X);
-            float ymin = Math.Min(Math.Min(v0.position.Y, v1.position.Y), v2.position.Y);
-            float ymax = Math.Max(Math.Max(v0.position.Y, v1.position.Y), v2.position.Y);
+            float xmin = Math.Min(Math.Min(xy0.X, xy1.X), xy2.X);
+            float xmax = Math.Max(Math.Max(xy0.X, xy1.X), xy2.X);
+            float ymin = Math.Min(Math.Min(xy0.Y, xy1.Y), xy2.Y);
+            float ymax = Math.Max(Math.Max(xy0.Y, xy1.Y), xy2.Y);
             //像素坐标包围盒
             int x0 = Utils.Clamp((int)xmin, 0, width-1);
             int y0 = Utils.Clamp((int)ymin, 0, height-1);
             int x1 = Utils.Clamp((int)xmax, 0, width-1);
             int y1 = Utils.Clamp((int)ymax, 0, height-1);
 
-            Vector2 xy0 = new Vector2(v0.position.X, v0.position.Y);
-            Vector2 xy1 = new Vector2(v1.position.X, v1.position.Y);
-            Vector2 xy2 = new Vector2(v2.position.X, v2.position.Y);
+           
 
             for( int y = y0; y <= y1; ++y )
             {
@@ -334,7 +348,7 @@ namespace SoftRenderer
 
 
                     //深度测试
-                    float depth = w0 * v0.position.Z + w1 * v1.position.Z + w2 * v2.position.Z;
+                    float depth = w0 * z0 + w1 * z1 + w2 * z2;
                     if(context.depthBuffer[x,y] < depth)
                     {
                         continue;
@@ -408,17 +422,35 @@ namespace SoftRenderer
         }
 
         
+        public void DrawTriangleFan(List<WavefrontVertex> Vertices)
+        {
+        
+            //TODO
+        }
 
-        public void DrawTriangle(VSOutput v0, VSOutput v1, VSOutput v2)
+        public void DrawTriangle(VSOutput vClip0, VSOutput vClip1, VSOutput vClip2)
+        {
+            //Backface Culling
+            //TODO Clipping
+        }
+
+        void DoDrawTriangle(VSOutput vClip0, VSOutput vClip1, VSOutput vClip2)
+        {
+            //TODO 透视除法
+            //TODO 视口变换
+            //RasterizeTriangle();
+        }
+
+        public void RasterizeTriangle(VSOutput vScreen0, VSOutput vScreen1, VSOutput vScreen2)
         {
             switch(context.drawMode)
             {
                 case DrawMode.Normal:
                 case DrawMode.Depth:
-                    BarycentricRasterizeTriangle(v0, v1, v2);
+                    BarycentricRasterizeTriangle(vScreen0, vScreen1, vScreen2);
                     break;
                 case DrawMode.Wireframe:
-                    DrawWireframe(v0, v1, v2);
+                    DrawWireframe(vScreen0, vScreen1, vScreen2);
                     break;
             }
         }

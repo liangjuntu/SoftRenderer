@@ -40,8 +40,6 @@ namespace SoftRenderer
         public Vector2 texcoord { get; set; }
         public Vector4 color { get; set; }
 
-        public Vector3 posScreen { get; set; } //viewport坐标
-
         //Other Attributes
         public void Clone(VSOutput other)
         {

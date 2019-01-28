@@ -255,17 +255,87 @@ namespace SoftRenderer
             {
                 return true;
             }
+            if(context.frontEndCull == FrontEndCull.On)
+            {
+                return true;
+            }
+
+            return true;
+        }
+
+        bool FrontEndCulling(VSOutput v0, VSOutput v1, VSOutput v2)
+        {
+            return FrontEndCullingByArea(v0, v1, v2);
+            //return FrontEndCullingByAngle(v0, v1, v2);
+        }
+
+        bool FrontEndCullingByAngle(VSOutput v0, VSOutput v1, VSOutput v2)
+        {
+            if(context.frontEndCull == FrontEndCull.Off)
+            {
+                return true;
+            }
+            if(context.cullMode == CullMode.None)
+            {
+                return true;
+            }
+
+            Vector3 pos0 = new Vector3(v0.position.X, v0.position.Y, v0.position.Z);
+            Vector3 pos1 = new Vector3(v1.position.X, v1.position.Y, v1.position.Z);
+            Vector3 pos2 = new Vector3(v2.position.X, v2.position.Y, v2.position.Z);
+            //为什么把Z改成Eye Space的Z就是对的？
+            //pos0.Z = v0.position.W;
+            //pos1.Z = v1.position.W;
+            //pos2.Z = v2.position.W;
+
+
+
+            //Vector3 n = Vector3.Cross(pos1-pos0, pos2 - pos0);
+            Vector3 n = Vector3.Cross(pos1-pos0, pos2 - pos1);
+
+            Vector3 p = pos0;
+
+            Vector3 test = Vector3.Cross(new Vector3(1,0,0),new Vector3(0,1,0));
+
+            //n = Vector3.Normalize(n);
+            //p = Vector3.Normalize(p);
+
+            float cos = Vector3.Dot(n, p);
+            if (context.winding == Winding.Clockwise)
+            {
+                return cos <= 0;
+            }
+            return cos >= 0;
+
+        }
+
+        bool FrontEndCullingByArea(VSOutput v0, VSOutput v1, VSOutput v2)
+        {
+            if(context.frontEndCull == FrontEndCull.Off)
+            {
+                return true;
+            }
+            if(context.cullMode == CullMode.None)
+            {
+                return true;
+            }
             //cull back
             Vector2 p0 = new Vector2(v0.position.X, v0.position.Y);
             Vector2 p1 = new Vector2(v1.position.X, v1.position.Y);
             Vector2 p2 = new Vector2(v2.position.X, v2.position.Y);
+
+            //做了透射除法,Culling准确点
+            p0 *= 1 / v0.position.W;
+            p1 *= 1 / v1.position.W;
+            p2 *= 1 / v2.position.W;
+            
             float area = Rasterizer.EdgeFunction(p0, p1, p2);
             //在Clip Space, area >= 0表示顺时针
             if (context.winding == Winding.Clockwise)
             {
-                return area >= 0;
+                return area > 0;
             }
-            return area <= 0;
+            return area < 0;
         }
 
         public void DrawGameObject(GameObject gameobject, Shader shader)
@@ -302,7 +372,7 @@ namespace SoftRenderer
                     VSOutput vScreen0 = rasterizer.ViewportTransform(vNDC0);
                     context.statics.vertexCount += 1;
 
-                    for ( int i = 1; i+1 < face.Vertices.Count; i+=2)
+                    for ( int i = 1; i+1 < face.Vertices.Count; i+=1)
                     {
                         context.statics.vertexCount += 2;
                         Vertex vertex1 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[i]);
@@ -310,7 +380,7 @@ namespace SoftRenderer
 
                         VSOutput vClip1 = shader.VertShader(vertex1);
                         VSOutput vClip2 = shader.VertShader(vertex2);
-                        if (!BackfaceCulling(vClip0, vClip1, vClip2))
+                        if (!FrontEndCulling(vClip0, vClip1, vClip2))
                         {
                             continue;
                         }
@@ -374,6 +444,7 @@ namespace SoftRenderer
             context.drawMode = drawInfo.drawMode;
             context.winding = drawInfo.winding;
             context.cullMode = drawInfo.cullMode;
+            context.frontEndCull = drawInfo.frontEndCull;
         }
 
         public void DrawStatics()

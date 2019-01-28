@@ -60,6 +60,11 @@ namespace SoftRenderer
             return Math.Max(min, Math.Min(max, num));
         }
 
+        public static float Clamp(float num, float min, float max)
+        {
+            return Math.Max(min, Math.Min(max, num));
+        }
+
         public static Color VectorToColor(System.Numerics.Vector4 color)
         {
             int a = Clamp((int)Math.Round(color.W * 255), 0,255);
@@ -68,6 +73,16 @@ namespace SoftRenderer
             int b = Clamp((int)Math.Round(color.Z * 255), 0,255);
             Color col = Color.FromArgb(a, r, g, b);
             return col;
+        }
+
+        public static Vector4 ColorToVector(Color color)
+        {
+            float inv = 1 / 255f;
+            float w = color.A * inv;
+            float x = color.R * inv;
+            float y = color.G * inv;
+            float z = color.B * inv;
+            return new Vector4(x, y, z, w);
         }
 
         public static float Degree2Radian(float degree)

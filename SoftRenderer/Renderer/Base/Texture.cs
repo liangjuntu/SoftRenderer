@@ -47,33 +47,53 @@ namespace SoftRenderer
         }
 
         
-        Color PointSample(Vector2 texcoord)
+        Vector4 PointSample(Vector2 texcoord)
         {
             //纹理坐标左上角为原点,http://blog.sina.com.cn/s/blog_80cc3d870101lntk.html
-            int uIndex = (int)(texcoord.X*Width);
-            int vIndex = (int)(texcoord.Y*Height);
+            int uIndex = (int)Math.Round(texcoord.X*Width, MidpointRounding.AwayFromZero);
+            int vIndex = (int)Math.Round(texcoord.Y*Height, MidpointRounding.AwayFromZero);
             uIndex = Utils.Clamp(uIndex, 0, Width - 1);
             vIndex = Utils.Clamp(vIndex, 0, Height - 1);
             Color col = bitmap.GetPixel(uIndex, vIndex);
+            return new Vector4(col.R / 255f, col.G / 255f, col.B / 255f, col.A / 255f);
+        }
+
+        Vector4 BilinearFiltering(Vector2 texcoord)
+        {
+            float u = texcoord.X * Width;
+            float v = texcoord.Y * Height;
+            int left = (int)Math.Floor(u);
+            int top = (int)Math.Floor(v);
+            left = Utils.Clamp(left, 0, Width - 1);
+            top = Utils.Clamp(top, 0, Height - 1);
+
+            float du = Utils.Clamp(u - left, 0, 1);
+            float dv = Utils.Clamp(v - top, 0, 1);
+
+            int right = Utils.Clamp(left+ 1, 0, Width-1);
+            int bottom = Utils.Clamp(top + 1, 0, Height-1);
+            Vector4 lt = Utils.ColorToVector(bitmap.GetPixel(left, top));
+            Vector4 rt = Utils.ColorToVector(bitmap.GetPixel(right, top));
+            Vector4 lb = Utils.ColorToVector(bitmap.GetPixel(left, bottom));
+            Vector4 rb = Utils.ColorToVector(bitmap.GetPixel(right, bottom));
+
+            float wlt = (1 - du) * (1 - dv);
+            float wrt = (du) * (1 - dv);
+            float wlb = (1-du) * (dv);
+            float wrb = (du) * (dv);
+            Vector4 col = wlt * lt + wrt * rt + wlb * lb + wrb * rb;
             return col;
         }
 
-        public Color RawTex2D(Vector2 texcoord, TextureFilterMode textureFilterMode)
+        public Vector4 Tex2D(Vector2 texcoord, TextureFilterMode textureFilterMode)
         {
             if(textureFilterMode == TextureFilterMode.Point)
             {
                 return PointSample(texcoord);
             }
-            //TODO
-            return PointSample(texcoord);
+            return BilinearFiltering(texcoord);
+            //TODO trilinear
         }
 
-
-        public Vector4 Tex2D(Vector2 texcoord, TextureFilterMode textureFilterMode)
-        {
-            Color col = RawTex2D(texcoord, textureFilterMode);
-            return new Vector4(col.R/255f, col.G/255f, col.B/255f, col.A/255f);
-        }
-        
     }
 }

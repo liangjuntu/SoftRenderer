@@ -404,8 +404,8 @@ namespace SoftRenderer
 
         public void DrawLine(VSOutput v0, VSOutput v1, Color color)
         {
-            Vector2 p0 = new Vector2(v0.position.X, v0.position.Y);
-            Vector2 p1 = new Vector2(v1.position.X, v1.position.Y);
+            Vector2 p0 = new Vector2(v0.posScreen.X, v0.posScreen.Y);
+            Vector2 p1 = new Vector2(v1.posScreen.X, v1.posScreen.Y);
             bool accept = CohenSutherlandLineClip(ref p0, ref p1);
             if (!accept)
             {

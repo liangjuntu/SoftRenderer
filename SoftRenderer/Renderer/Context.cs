@@ -21,6 +21,12 @@ namespace SoftRenderer
         //Front
     }
 
+    public enum FrontEndCull
+    {
+        Off,
+        On
+    }
+
     public enum Winding
     {
         Clockwise,
@@ -43,6 +49,7 @@ namespace SoftRenderer
         public Color wireframeColor = Color.White;
         public Winding winding = Winding.CounterClockwise;
         public CullMode cullMode = CullMode.None;
+        public FrontEndCull frontEndCull = FrontEndCull.Off;
 
         public Context(Size size)
         {

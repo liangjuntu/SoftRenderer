@@ -17,8 +17,8 @@ namespace SoftRenderer
         public float CameraFar = 10f;
         public float CameraFov = 60f;
         public Color CameraClearColor = Color.Black;
-        public TextureFilterMode textureFilterMode = TextureFilterMode.Point;
-        //public TextureFilterMode textureFilterMode = TextureFilterMode.Bilinear;
+        //public TextureFilterMode textureFilterMode = TextureFilterMode.Point;
+        public TextureFilterMode textureFilterMode = TextureFilterMode.Bilinear;
         public DrawMode drawMode = DrawMode.Normal;
         //public DrawMode drawMode = DrawMode.Wireframe;
         //public DrawMode drawMode = DrawMode.Depth;

@@ -212,6 +212,7 @@ namespace SoftRenderer
 
         void UpdateUI()
         {
+            CtrlPanel.Visible = true;
             PositionX.Text = position.X.ToString();
             PositionY.Text = position.Y.ToString();
             PositionZ.Text = position.Z.ToString();

@@ -32,11 +32,13 @@
             this.LabelPosition = new System.Windows.Forms.Label();
             this.PositionY = new System.Windows.Forms.TextBox();
             this.PositionZ = new System.Windows.Forms.TextBox();
+            this.CtrlPanel = new System.Windows.Forms.Panel();
+            this.CtrlPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PositionX
             // 
-            this.PositionX.Location = new System.Drawing.Point(698, 16);
+            this.PositionX.Location = new System.Drawing.Point(82, 17);
             this.PositionX.Name = "PositionX";
             this.PositionX.Size = new System.Drawing.Size(27, 21);
             this.PositionX.TabIndex = 0;
@@ -46,7 +48,7 @@
             // 
             this.LabelPosition.AutoSize = true;
             this.LabelPosition.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.LabelPosition.Location = new System.Drawing.Point(629, 17);
+            this.LabelPosition.Location = new System.Drawing.Point(13, 18);
             this.LabelPosition.Name = "LabelPosition";
             this.LabelPosition.Size = new System.Drawing.Size(63, 14);
             this.LabelPosition.TabIndex = 1;
@@ -54,7 +56,7 @@
             // 
             // PositionY
             // 
-            this.PositionY.Location = new System.Drawing.Point(731, 16);
+            this.PositionY.Location = new System.Drawing.Point(115, 17);
             this.PositionY.Name = "PositionY";
             this.PositionY.Size = new System.Drawing.Size(27, 21);
             this.PositionY.TabIndex = 2;
@@ -62,25 +64,34 @@
             // 
             // PositionZ
             // 
-            this.PositionZ.Location = new System.Drawing.Point(764, 16);
+            this.PositionZ.Location = new System.Drawing.Point(148, 17);
             this.PositionZ.Name = "PositionZ";
             this.PositionZ.Size = new System.Drawing.Size(27, 21);
             this.PositionZ.TabIndex = 3;
             this.PositionZ.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // CtrlPanel
+            // 
+            this.CtrlPanel.Controls.Add(this.LabelPosition);
+            this.CtrlPanel.Controls.Add(this.PositionZ);
+            this.CtrlPanel.Controls.Add(this.PositionX);
+            this.CtrlPanel.Controls.Add(this.PositionY);
+            this.CtrlPanel.Location = new System.Drawing.Point(603, 12);
+            this.CtrlPanel.Name = "CtrlPanel";
+            this.CtrlPanel.Size = new System.Drawing.Size(185, 426);
+            this.CtrlPanel.TabIndex = 4;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.PositionZ);
-            this.Controls.Add(this.PositionY);
-            this.Controls.Add(this.LabelPosition);
-            this.Controls.Add(this.PositionX);
+            this.Controls.Add(this.CtrlPanel);
             this.Name = "Form1";
             this.Text = "SoftRenderer by liangjuntu";
+            this.CtrlPanel.ResumeLayout(false);
+            this.CtrlPanel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -90,6 +101,7 @@
         private System.Windows.Forms.Label LabelPosition;
         private System.Windows.Forms.TextBox PositionY;
         private System.Windows.Forms.TextBox PositionZ;
+        private System.Windows.Forms.Panel CtrlPanel;
     }
 }
 

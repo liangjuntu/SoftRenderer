@@ -620,6 +620,7 @@ namespace SoftRenderer
 
         public void DrawStatics()
         {
+            context.statics.FrameTick(); 
             Font font = new Font("Arial", 16);
 
             SolidBrush brush = new SolidBrush(Color.White);
@@ -627,6 +628,7 @@ namespace SoftRenderer
             context.frameGraphics.DrawString(String.Format("Mesh:{0}-SubMesh:{1}",context.statics.meshCount,context.statics.submeshCount), font, brush, 20, 20);
             context.frameGraphics.DrawString(String.Format("tri:{0}-raster:{1}",context.statics.triangleCount,context.statics.rasterTriCount), font, brush, 20, 40);
             context.frameGraphics.DrawString(String.Format("vert:{0}-frag:{1}",context.statics.vertexCount, context.statics.fragmentCount), font, brush, 20, 60);
+            context.frameGraphics.DrawString(String.Format("FPS:{0}",context.statics.FPS), font, brush, 20, 80);
         }
        
     }

@@ -57,6 +57,10 @@ namespace SoftRenderer
                 inputs = outputs;
                 Vector4 plane = planes[i];
                 outputs = ClipToPlane(inputs, plane);
+                if(outputs.Count <= 0)
+                {
+                    break;
+                }
             }
 
             return outputs;

@@ -161,6 +161,18 @@ namespace SoftRenderer
             wfcIndex = 0;
         }
 
+        public static float SafeToSingle(string str)
+        {
+            float single = 0f;
+            try
+            {
+                single = Convert.ToSingle(str);
+            } catch(Exception e)
+            {
+
+            }
+            return single;
+        }
 
     }
 }

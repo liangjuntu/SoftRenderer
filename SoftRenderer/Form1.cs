@@ -37,6 +37,10 @@ namespace SoftRenderer
         public String meshPath = "";
         public String texturePath = "../../TestData/texture.jpg";
 
+        Vector3 position = Vector3.Zero;
+        Vector3 eulerAngles = Vector3.Zero;
+        Vector3 scale = Vector3.One;
+
         public Form1()
         {
             InitializeComponent();
@@ -57,6 +61,7 @@ namespace SoftRenderer
             timer.Tick += FrameUpdate;
 
             InitDefault();
+            UpdateUI();
         }
 
         protected override void OnResize(EventArgs e)
@@ -132,6 +137,7 @@ namespace SoftRenderer
                 //eulerAngles.X = rot;
                 transform.eulerAngles = eulerAngles;
                 //transform.position = new Vector3(4, 0, 0);
+                transform.position = position;
             }
         }
 
@@ -189,9 +195,26 @@ namespace SoftRenderer
 
         void FrameUpdate(object sender, EventArgs e)
         {
+            InputByUI();
             PreUpdate();
             DoUpdate();
             //DoTest();
+        }
+
+
+        void InputByUI()
+        {
+            //位置
+            position.X = Utils.SafeToSingle(PositionX.Text);
+            position.Y = Utils.SafeToSingle(PositionY.Text);
+            position.Z = Utils.SafeToSingle(PositionZ.Text);
+        }
+
+        void UpdateUI()
+        {
+            PositionX.Text = position.X.ToString();
+            PositionY.Text = position.Y.ToString();
+            PositionZ.Text = position.Z.ToString();
         }
 
     }

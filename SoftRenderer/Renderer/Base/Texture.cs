@@ -49,29 +49,46 @@ namespace SoftRenderer
         
         Vector4 PointSample(Vector2 texcoord)
         {
+            //u和v的范围是[0,width]和[0,height]
+            //而像素索引x和y的范围分别是[0,width-1]和[0,Height-1]
+            //对于位置为(x,y)的像素对应的应该是中心，即(u,v)=(x+0.5, y+0.5)的颜色值
+            //也就是说对于点采样：uv范围[i,i+1)应该索引i的颜色
+            float u = texcoord.X * Width;
+            float v = texcoord.Y * Height;
+            int uIdx = (int)Math.Floor(u);
+            int vIdx = (int)Math.Round(v);
+
             //纹理坐标左上角为原点,http://blog.sina.com.cn/s/blog_80cc3d870101lntk.html
-            int uIndex = (int)Math.Round(texcoord.X*Width, MidpointRounding.AwayFromZero);
-            int vIndex = (int)Math.Round(texcoord.Y*Height, MidpointRounding.AwayFromZero);
-            uIndex = Utils.Clamp(uIndex, 0, Width - 1);
-            vIndex = Utils.Clamp(vIndex, 0, Height - 1);
-            Color col = bitmap.GetPixel(uIndex, vIndex);
+            uIdx = Utils.Clamp(uIdx, 0, Width - 1);
+            vIdx = Utils.Clamp(vIdx, 0, Height - 1);
+            Color col = bitmap.GetPixel(uIdx, vIdx);
             return new Vector4(col.R / 255f, col.G / 255f, col.B / 255f, col.A / 255f);
         }
 
         Vector4 BilinearFiltering(Vector2 texcoord)
         {
+            //u和v的范围是[0,width]和[0,height]
+            //而像素索引x和y的范围分别是[0,width-1]和[0,Height-1]
+            //对于位置为(x,y)的像素对应的应该是中心，即(u,v)=(x+0.5, y+0.5)的颜色值
+            //也就是说对于双线性采样:[i+0.5, i+1.5)之间的uv在i和i+1之间线性插值
             float u = texcoord.X * Width;
             float v = texcoord.Y * Height;
-            int left = (int)Math.Floor(u);
-            int top = (int)Math.Floor(v);
+            float uIdx = (float)Math.Floor(u - 0.5f);
+            float vIdx = (float)Math.Floor(v - 0.5f);
+
+            float du = u - (uIdx + 0.5f);
+            float dv = v - (vIdx + 0.5f);
+
+            int left = (int)uIdx;
+            int right = left + 1;
+            int top = (int)vIdx;
+            int bottom = top + 1;
+
             left = Utils.Clamp(left, 0, Width - 1);
+            right = Utils.Clamp(right, 0, Width - 1);
             top = Utils.Clamp(top, 0, Height - 1);
-
-            float du = Utils.Clamp(u - left, 0, 1);
-            float dv = Utils.Clamp(v - top, 0, 1);
-
-            int right = Utils.Clamp(left+ 1, 0, Width-1);
-            int bottom = Utils.Clamp(top + 1, 0, Height-1);
+            bottom = Utils.Clamp(bottom, 0, Height - 1);
+            
             Vector4 lt = Utils.ColorToVector(bitmap.GetPixel(left, top));
             Vector4 rt = Utils.ColorToVector(bitmap.GetPixel(right, top));
             Vector4 lb = Utils.ColorToVector(bitmap.GetPixel(left, bottom));

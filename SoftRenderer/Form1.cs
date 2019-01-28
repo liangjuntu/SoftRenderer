@@ -128,10 +128,10 @@ namespace SoftRenderer
                 Transform transform = gameObject.transform;
                 Vector3 eulerAngles = transform.eulerAngles;
                 //eulerAngles.Y = 10f;
-                //eulerAngles.Y = rot;
+                eulerAngles.Y = rot;
                 //eulerAngles.X = rot;
                 transform.eulerAngles = eulerAngles;
-                transform.position = new Vector3(4, 0, 0);
+                //transform.position = new Vector3(4, 0, 0);
             }
         }
 
@@ -182,13 +182,16 @@ namespace SoftRenderer
             isDrawing = false;
         }
 
+        void DoTest()
+        {
+            renderer.TestClipping();
+        }
+
         void FrameUpdate(object sender, EventArgs e)
         {
-            /*
             PreUpdate();
             DoUpdate();
-            */
-            renderer.TestClipping();
+            //DoTest();
         }
 
     }

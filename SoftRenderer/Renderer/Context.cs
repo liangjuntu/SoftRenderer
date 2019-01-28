@@ -50,6 +50,7 @@ namespace SoftRenderer
         public Winding winding = Winding.CounterClockwise;
         public CullMode cullMode = CullMode.None;
         public FrontEndCull frontEndCull = FrontEndCull.Off;
+        public ClippingMode clippingMode = ClippingMode.SixPlane;
 
         public Context(Size size)
         {

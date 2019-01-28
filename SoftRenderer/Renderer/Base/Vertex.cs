@@ -49,6 +49,19 @@ namespace SoftRenderer
             this.normal = other.normal;
             this.texcoord = other.texcoord;
             this.color = other.color;
+            this.posScreen = other.posScreen;
+        }
+
+        public static VSOutput Lerp(VSOutput A, VSOutput B, float amount)
+        {
+            VSOutput C = new VSOutput();
+            C.position = Vector4.Lerp(A.position, B.position, amount);
+            C.normal = Vector3.Lerp(A.normal, B.normal, amount);
+            C.texcoord = Vector2.Lerp(A.texcoord, B.texcoord, amount);
+            C.color = Vector4.Lerp(A.color, B.color, amount);
+            C.posScreen = Vector3.Lerp(A.posScreen, B.posScreen, amount);
+            return C;
+
         }
     }
 

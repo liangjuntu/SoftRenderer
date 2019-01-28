@@ -17,7 +17,8 @@ namespace SoftRenderer
         public float CameraFar = 10f;
         public float CameraFov = 60f;
         public Color CameraClearColor = Color.Black;
-        public TextureFilterMode textureFilterMode = TextureFilterMode.Point;
+        //public TextureFilterMode textureFilterMode = TextureFilterMode.Point;
+        public TextureFilterMode textureFilterMode = TextureFilterMode.Bilinear;
         //public DrawMode drawMode = DrawMode.Normal;
         public DrawMode drawMode = DrawMode.Wireframe;
         //public DrawMode drawMode = DrawMode.Depth;
@@ -25,5 +26,6 @@ namespace SoftRenderer
         //public CullMode cullMode = CullMode.None;
         public CullMode cullMode = CullMode.Back;
         public Winding winding = Winding.CounterClockwise;
+        public ClippingMode clippingMode = ClippingMode.SixPlane;
     }
 }

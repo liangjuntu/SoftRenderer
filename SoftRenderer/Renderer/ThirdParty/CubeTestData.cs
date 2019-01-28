@@ -29,8 +29,9 @@ namespace SoftRenderer.Test
                                         };
         //三角形顶点索引 12个面
         public static int[] indexs = {   0,1,2,
-                                   0,2,3,
+                                   //0,2,3,
                                    //
+                                   /*
                                    7,6,5,
                                    7,5,4,
                                    //
@@ -45,6 +46,7 @@ namespace SoftRenderer.Test
                                    //
                                    3,7,4,
                                    3,4,0
+                                   */
                                };
 
         //uv坐标

@@ -141,6 +141,26 @@ namespace SoftRenderer
 
 
         }
-        
+
+        static int wfcIndex = 0;
+        static List<Color> wfcList = new List<Color> {
+            Color.Red, Color.Green, Color.Blue,
+            //Color.AliceBlue, Color.AntiqueWhite, Color.Aqua, Color.Aquamarine, Color.Azure
+            Color.Beige, Color.Bisque, Color.BlanchedAlmond, Color.Brown, Color.BurlyWood
+        };
+
+        public static Color NextWireframeColor()
+        {
+            Color col = wfcList[wfcIndex];
+            wfcIndex = (wfcIndex + 1) % wfcList.Count;
+            return col;
+        }
+
+        public static void ClearWireframeColor()
+        {
+            wfcIndex = 0;
+        }
+
+
     }
 }

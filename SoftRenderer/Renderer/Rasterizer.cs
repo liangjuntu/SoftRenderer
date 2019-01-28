@@ -416,30 +416,13 @@ namespace SoftRenderer
 
         void DrawWireframe(VSOutput v0, VSOutput v1, VSOutput v2)
         {
-            DrawLine(v0, v1, context.wireframeColor);
-            DrawLine(v1, v2, context.wireframeColor);
-            DrawLine(v2, v0, context.wireframeColor);
+            Color col = context.wireframeColor;
+            col = Utils.NextWireframeColor();
+            DrawLine(v0, v1, col);
+            DrawLine(v1, v2, col);
+            DrawLine(v2, v0, col);
         }
 
-        
-        public void DrawTriangleFan(List<WavefrontVertex> Vertices)
-        {
-        
-            //TODO
-        }
-
-        public void DrawTriangle(VSOutput vClip0, VSOutput vClip1, VSOutput vClip2)
-        {
-            //Backface Culling
-            //TODO Clipping
-        }
-
-        void DoDrawTriangle(VSOutput vClip0, VSOutput vClip1, VSOutput vClip2)
-        {
-            //TODO 透视除法
-            //TODO 视口变换
-            //RasterizeTriangle();
-        }
 
         public void RasterizeTriangle(VSOutput vScreen0, VSOutput vScreen1, VSOutput vScreen2)
         {

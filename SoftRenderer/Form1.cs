@@ -119,7 +119,7 @@ namespace SoftRenderer
         void SetUpGameObjects()
         {
             //如果用欧拉角做旋转矩阵旋转可能会有gimbal lock(万向锁)的问题https://www.cnblogs.com/psklf/p/5656938.html
-            rot += 0.1f;
+            rot += 1f;
             rot %= 360f;
             
             for( int i = 0; i < gameObjects.Count; ++i )
@@ -128,9 +128,10 @@ namespace SoftRenderer
                 Transform transform = gameObject.transform;
                 Vector3 eulerAngles = transform.eulerAngles;
                 //eulerAngles.Y = 10f;
-                eulerAngles.Y = rot;
+                //eulerAngles.Y = rot;
                 //eulerAngles.X = rot;
                 transform.eulerAngles = eulerAngles;
+                transform.position = new Vector3(4, 0, 0);
             }
         }
 
@@ -183,8 +184,11 @@ namespace SoftRenderer
 
         void FrameUpdate(object sender, EventArgs e)
         {
+            /*
             PreUpdate();
             DoUpdate();
+            */
+            renderer.TestClipping();
         }
 
     }

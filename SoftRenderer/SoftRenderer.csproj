@@ -55,6 +55,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\Base\Camera.cs" />
+    <Compile Include="Renderer\Base\Clipping.cs" />
     <Compile Include="Renderer\Base\GameObject.cs" />
     <Compile Include="Renderer\Base\Shader.cs" />
     <Compile Include="Renderer\Base\Statics.cs" />

@@ -13,6 +13,7 @@ namespace SoftRenderer
         public int vertexCount = 0;
         public int triangleCount = 0;
         public int fragmentCount = 0;
+        public int rasterTriCount = 0;
         public void Clear()
         {
             meshCount = 0;
@@ -20,6 +21,7 @@ namespace SoftRenderer
             vertexCount = 0;
             triangleCount = 0;
             fragmentCount = 0;
+            rasterTriCount = 0;
         }
     }
 }

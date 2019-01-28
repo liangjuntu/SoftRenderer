@@ -62,6 +62,7 @@ namespace SoftRenderer
             {
                 context.ClearFrameBuffer();
             }
+            Utils.ClearWireframeColor();
         }
 
 
@@ -249,7 +250,50 @@ namespace SoftRenderer
             rasterizer.BarycentricRasterizeTriangle(v0, v1, v2);
         }
 
-        bool BackfaceCulling(VSOutput v0, VSOutput v1, VSOutput v2)
+        public void TestClipping()
+        {
+            Clear();
+            context.clippingMode = ClippingMode.SixPlane;
+            //context.clippingMode = ClippingMode.Off;
+            context.drawMode = DrawMode.Wireframe;
+            context.cullMode = CullMode.Back;
+            context.frontEndCull = FrontEndCull.Off;
+            VSOutput v0 = new VSOutput();
+            VSOutput v1 = new VSOutput();
+            VSOutput v2 = new VSOutput();
+
+            List<VSOutput> inputs = new List<VSOutput>() { v0, v1, v2 };
+            //第一个三角形，右裁剪平面，一个顶点在外=>生成两个三角形
+            v0.position = new Vector4(0.5f, 0.5f, 0, 1);
+            v1.position = new Vector4(0, -0.5f, 0, 1);
+            v2.position = new Vector4(2, 0, 0, 1);//在外面
+            DrawTriangle(v0, v1, v2);
+
+           
+            //第二个三角形，上裁剪平面，两个顶点在外=>生成一个三角形
+            v0.position = new Vector4(-0.5f, 4f, 0, 1);
+            v1.position = new Vector4(0.5f, 0f, 0, 1); //在外面
+            v2.position = new Vector4(0.6f, 2f, 0, 1);//在外面
+            DrawTriangle(v0, v1, v2);
+
+            //第三个，三个顶点都在外
+            v0.position = new Vector4(0.6f, 1.5f, 0, 1);
+            v1.position = new Vector4(-1.5f, -0.3f, 0, 1);
+            v2.position = new Vector4(0.8f, -1.2f, 0, 1);
+            DrawTriangle(v0, v1, v2);
+
+            
+            //顺别测下Back face Culling;对换了v1和v2，应该不画
+            v0.position = new Vector4(0.6f, 1.5f, 0, 1);
+            v2.position = new Vector4(-1.5f, -0.3f, 0, 1);
+            v1.position = new Vector4(0.8f, -1.2f, 0, 1);
+            //DrawTriangle(v0, v1, v2);
+
+
+            Present();
+        }
+
+        bool BackfaceCulling(VSOutput vScreen0, VSOutput vScreen1, VSOutput vScreen2)
         {
             if(context.cullMode == CullMode.None)
             {
@@ -260,7 +304,17 @@ namespace SoftRenderer
                 return true;
             }
 
-            return true;
+            Vector2 p0 = new Vector2(vScreen0.posScreen.X, vScreen0.posScreen.Y);
+            Vector2 p1 = new Vector2(vScreen1.posScreen.X, vScreen1.posScreen.Y);
+            Vector2 p2 = new Vector2(vScreen2.posScreen.X, vScreen2.posScreen.Y);
+
+            float area = Rasterizer.EdgeFunction(p0, p1, p2);
+            if (context.winding == Winding.Clockwise)
+            {
+                return area < 0;
+            }
+            //在Viewport Space, 由于Y轴向下, area > 0表示逆时针
+            return area > 0;
         }
 
         bool FrontEndCulling(VSOutput v0, VSOutput v1, VSOutput v2)
@@ -338,6 +392,90 @@ namespace SoftRenderer
             return area < 0;
         }
 
+        public void DrawFace(WavefrontObject meshObj, WavefrontFace face, Shader shader)
+        {
+            //WavefontFace是一个triangle fan
+            //可能会有多个三角形;这些三角形共用第一个顶点做v0
+            if (face.Vertices.Count < 3)
+            {
+                Debug.Assert(false);
+                return;
+            }
+            Vertex vertex0 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[0]);
+            VSOutput vClip0 = shader.VertShader(vertex0);
+            context.statics.vertexCount += 1;
+
+            for (int i = 1; i + 1 < face.Vertices.Count; i += 1)
+            {
+                Vertex vertex1 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[i]);
+                Vertex vertex2 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[i + 1]);
+                //顶点着色器
+                VSOutput vClip1 = shader.VertShader(vertex1);
+                VSOutput vClip2 = shader.VertShader(vertex2);
+                context.statics.vertexCount += 2;
+                DrawTriangle(vClip0, vClip1, vClip2);
+            }
+        }
+
+        //裁剪前
+        public void DrawTriangle(VSOutput vClip0, VSOutput vClip1, VSOutput vClip2)
+        {
+            //Backface Culling
+            if (!FrontEndCulling(vClip0, vClip1, vClip2))
+            {
+                return;
+            }
+            context.statics.triangleCount += 1;
+            //Clipping
+            List<VSOutput> inputs = new List<VSOutput> { vClip0, vClip1, vClip2 };
+            List<VSOutput> outputs = Clipping.Clip(inputs, context);
+
+            //输出结果是trianglefan
+            if(outputs.Count < 3)
+            {
+                //全裁剪掉了
+                return;
+            }
+
+            //画Triangle Fan
+            VSOutput v0 = outputs[0];
+            VSOutput vNDC0 = Rasterizer.PerspectiveDivide(v0);
+            if (vNDC0 == null)
+            {
+                return;
+            }
+            VSOutput vScreen0 = rasterizer.ViewportTransform(vNDC0);
+            for (int i = 1; i + 1 < outputs.Count; i += 1)
+            {
+                VSOutput v1 = outputs[i];
+                VSOutput v2 = outputs[i+1];
+                VSOutput vNDC1 = Rasterizer.PerspectiveDivide(v1);
+                VSOutput vNDC2 = Rasterizer.PerspectiveDivide(v2);
+                if (vNDC1 == null || vNDC2 == null)
+                {
+                    continue;
+                }
+                VSOutput vScreen1 = rasterizer.ViewportTransform(vNDC1);
+                VSOutput vScreen2 = rasterizer.ViewportTransform(vNDC2);
+                //检查Backface
+                if(i == 1)
+                {
+                    //由于裁剪前后的三角形都在同一个平面上，所以只要检查第一个就够了
+                    if (!BackfaceCulling(vScreen0, vScreen1, vScreen2))
+                    {
+                        return;
+                    }
+                }
+
+                context.statics.rasterTriCount += 1;
+                rasterizer.RasterizeTriangle(vScreen0, vScreen1, vScreen2);
+            }
+        }
+
+       
+
+
+        /*
         public void DrawGameObject(GameObject gameobject, Shader shader)
         {
             context.statics.meshCount += 1;
@@ -362,6 +500,7 @@ namespace SoftRenderer
                     //face为triangle fan;可能会有多个三角形
                     Debug.Assert(face.Vertices.Count > 2);
                     Vertex vertex0 = Vertex.FromWavefrontVertex(meshObj, face.Vertices[0]);
+                    context.statics.vertexCount += 1;
                     VSOutput vClip0 = shader.VertShader(vertex0);
                     //TODO 做Clipping
                     VSOutput vNDC0 = Rasterizer.PerspectiveDivide(vClip0);
@@ -370,7 +509,6 @@ namespace SoftRenderer
                         continue;
                     }
                     VSOutput vScreen0 = rasterizer.ViewportTransform(vNDC0);
-                    context.statics.vertexCount += 1;
 
                     for ( int i = 1; i+1 < face.Vertices.Count; i+=1)
                     {
@@ -397,6 +535,38 @@ namespace SoftRenderer
                         context.statics.triangleCount += 1;
                         rasterizer.RasterizeTriangle(vScreen0, vScreen1, vScreen2);
                     } 
+                }
+
+            }
+
+            rasterizer.shader = null;
+
+
+
+        }
+        */
+        public void DrawGameObject(GameObject gameobject, Shader shader)
+        {
+            context.statics.meshCount += 1;
+
+            //设置Shader相关
+            Transform transform = gameobject.transform;
+            Matrix4x4 modelMatrix = transform.ModelToWorld;
+            shader.SetModelMatrix(modelMatrix);
+
+            Texture texture = gameobject.texture;
+            shader.texture = texture;
+            rasterizer.shader = shader;
+
+            WavefrontObject meshObj = gameobject.meshObj;
+
+            foreach (var faceGroup in meshObj.Groups)
+            {
+                context.statics.submeshCount += 1;
+                //faceGroup相当于submesh
+                foreach (var face in faceGroup.Faces)
+                {
+                    DrawFace(meshObj, face, shader);
                 }
 
             }
@@ -445,6 +615,7 @@ namespace SoftRenderer
             context.winding = drawInfo.winding;
             context.cullMode = drawInfo.cullMode;
             context.frontEndCull = drawInfo.frontEndCull;
+            context.clippingMode = drawInfo.clippingMode;
         }
 
         public void DrawStatics()
@@ -454,7 +625,8 @@ namespace SoftRenderer
             SolidBrush brush = new SolidBrush(Color.White);
 
             context.frameGraphics.DrawString(String.Format("Mesh:{0}-SubMesh:{1}",context.statics.meshCount,context.statics.submeshCount), font, brush, 20, 20);
-            context.frameGraphics.DrawString(String.Format("vert:{0}-tri:{1}-frag:{2}",context.statics.vertexCount,context.statics.triangleCount, context.statics.fragmentCount), font, brush, 20, 40);
+            context.frameGraphics.DrawString(String.Format("tri:{0}-raster:{1}",context.statics.triangleCount,context.statics.rasterTriCount), font, brush, 20, 40);
+            context.frameGraphics.DrawString(String.Format("vert:{0}-frag:{1}",context.statics.vertexCount, context.statics.fragmentCount), font, brush, 20, 60);
         }
        
     }

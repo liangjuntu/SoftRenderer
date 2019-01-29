@@ -32,14 +32,14 @@ namespace SoftRenderer
         
 
         float FPS = 30f;
-        float rot = 0f;
         //对外显示的
         public String meshPath = "";
         public String texturePath = "../../TestData/texture.jpg";
 
-        Vector3 position = Vector3.Zero;
-        Vector3 eulerAngles = Vector3.Zero;
-        Vector3 scale = Vector3.One;
+        Vector3 objPosition = Vector3.Zero;
+        Vector3 objRotation = Vector3.Zero;
+        Vector3 objScale = Vector3.One;
+        Vector3 objAutoRot = new Vector3(1f, 2f, 0);
 
         public Form1()
         {
@@ -54,6 +54,7 @@ namespace SoftRenderer
             //timer.Start();
 
             drawInfo = new DrawInfo();
+
             timer = new System.Windows.Forms.Timer(); 
             timer.Enabled = true;
             timer.Interval = (int)(1000f / FPS);
@@ -61,7 +62,11 @@ namespace SoftRenderer
             timer.Tick += FrameUpdate;
 
             InitDefault();
-            UpdateUI();
+            CtrlPanel.Visible = false;
+            InitBtns();
+            
+            RefreshUI();
+
         }
 
         protected override void OnResize(EventArgs e)
@@ -124,20 +129,19 @@ namespace SoftRenderer
         void SetUpGameObjects()
         {
             //如果用欧拉角做旋转矩阵旋转可能会有gimbal lock(万向锁)的问题https://www.cnblogs.com/psklf/p/5656938.html
-            rot += 1f;
-            rot %= 360f;
-            
-            for( int i = 0; i < gameObjects.Count; ++i )
+            /*
+          
+            */
+
+
+            for ( int i = 0; i < gameObjects.Count; ++i )
             {
                 GameObject gameObject = gameObjects[i];
                 Transform transform = gameObject.transform;
                 Vector3 eulerAngles = transform.eulerAngles;
-                //eulerAngles.Y = 10f;
-                eulerAngles.Y = rot;
-                //eulerAngles.X = rot;
-                transform.eulerAngles = eulerAngles;
-                //transform.position = new Vector3(4, 0, 0);
-                transform.position = position;
+                transform.position = objPosition;
+                transform.eulerAngles = objRotation;
+                transform.scale = objScale;
             }
         }
 
@@ -195,28 +199,153 @@ namespace SoftRenderer
 
         void FrameUpdate(object sender, EventArgs e)
         {
-            InputByUI();
+            UpdateUI();
             PreUpdate();
             DoUpdate();
             //DoTest();
         }
 
+        void UpdateUI()
+        {
+            InputByUI();
+            
+            objRotation += objAutoRot;
+            objRotation.X %= 360f;
+            objRotation.Y %= 360f;
+            objRotation.Z %= 360f;
+            //检查UI输入合法性
+            drawInfo.CheckParams();
+            RefreshUI();
+        }
 
         void InputByUI()
         {
-            //位置
-            position.X = Utils.SafeToSingle(PositionX.Text);
-            position.Y = Utils.SafeToSingle(PositionY.Text);
-            position.Z = Utils.SafeToSingle(PositionZ.Text);
+            //物体位置,旋转，缩放
+            objPosition.X = Utils.SafeToSingle(PositionX.Text);
+            objPosition.Y = Utils.SafeToSingle(PositionY.Text);
+            objPosition.Z = Utils.SafeToSingle(PositionZ.Text);
+
+            objRotation.X = Utils.SafeToSingle(RotationX.Text);
+            objRotation.Y = Utils.SafeToSingle(RotationY.Text);
+            objRotation.Z = Utils.SafeToSingle(RotationZ.Text);
+
+            objScale.X = Utils.SafeToSingle(ScaleX.Text);
+            objScale.Y = Utils.SafeToSingle(ScaleY.Text);
+            objScale.Z = Utils.SafeToSingle(ScaleZ.Text);
+
+            objAutoRot.X = Utils.SafeToSingle(AutoRotX.Text);
+            objAutoRot.Y = Utils.SafeToSingle(AutoRotY.Text);
+            objAutoRot.Z = Utils.SafeToSingle(AutoRotZ.Text);
+
+
+            //摄像机
+            
+            drawInfo.cameraPosition.X = Utils.SafeToSingle(CamPosX.Text);
+            drawInfo.cameraPosition.Y = Utils.SafeToSingle(CamPosY.Text);
+            drawInfo.cameraPosition.Z = Utils.SafeToSingle(CamPosZ.Text);
+
+            drawInfo.cameraEulerAngles.X = Utils.SafeToSingle(CamRotX.Text);
+            drawInfo.cameraEulerAngles.Y = Utils.SafeToSingle(CamRotY.Text);
+            drawInfo.cameraEulerAngles.Z = Utils.SafeToSingle(CamRotZ.Text);
+
+            drawInfo.CameraNear = Utils.SafeToSingle(Near.Text);
+            drawInfo.CameraFar = Utils.SafeToSingle(Far.Text);
+            drawInfo.CameraFov = Utils.SafeToSingle(Fov.Text);
+
         }
 
-        void UpdateUI()
+        void RefreshUI()
         {
-            CtrlPanel.Visible = true;
-            PositionX.Text = position.X.ToString();
-            PositionY.Text = position.Y.ToString();
-            PositionZ.Text = position.Z.ToString();
+            PositionX.Text = objPosition.X.ToString();
+            PositionY.Text = objPosition.Y.ToString();
+            PositionZ.Text = objPosition.Z.ToString();
+
+            RotationX.Text = objRotation.X.ToString();
+            RotationY.Text = objRotation.Y.ToString();
+            RotationZ.Text = objRotation.Z.ToString();
+
+            ScaleX.Text = objScale.X.ToString();
+            ScaleY.Text = objScale.Y.ToString();
+            ScaleZ.Text = objScale.Z.ToString();
+
+            AutoRotX.Text = objAutoRot.X.ToString();
+            AutoRotY.Text = objAutoRot.Y.ToString();
+            AutoRotZ.Text = objAutoRot.Z.ToString();
+
+            //摄像机
+            CamPosX.Text = drawInfo.cameraPosition.X.ToString();
+            CamPosY.Text = drawInfo.cameraPosition.Y.ToString();
+            CamPosZ.Text = drawInfo.cameraPosition.Z.ToString();
+            
+            CamRotX.Text = drawInfo.cameraEulerAngles.X.ToString();
+            CamRotY.Text = drawInfo.cameraEulerAngles.Y.ToString();
+            CamRotZ.Text = drawInfo.cameraEulerAngles.Z.ToString();
+
+            Near.Text = drawInfo.CameraNear.ToString();
+            Far.Text = drawInfo.CameraFar.ToString();
+            Fov.Text = drawInfo.CameraFov.ToString();
+
+
+            //btns
+            BtnTextureFilterMode.Text = string.Format("TexFilter:{0}",drawInfo.textureFilterMode.ToString());
+            BtnDrawMode.Text = String.Format("DrawMode:{0}", drawInfo.drawMode.ToString());
+            BtnCullMode.Text = String.Format("Cull:{0}", drawInfo.cullMode.ToString());
+            BtnCullFrontEnd.Text = String.Format("FrontEnd:{0}", drawInfo.frontEndCull.ToString());
+            BtnWinding.Text = String.Format("Winding:{0}", drawInfo.winding.ToString());
+            BtnClippingMode.Text = String.Format("Clipping:{0}", drawInfo.clippingMode.ToString());
+           
         }
 
+        void OnClickBtnCtrlPanel(object sender, EventArgs e)
+        {
+            CtrlPanel.Visible = !CtrlPanel.Visible;
+        }
+
+        void OnClickBtnTextureFilterMode(object sender, EventArgs e)
+        {
+            int mode = (int)(drawInfo.textureFilterMode +1) % (int)(TextureFilterMode.Bilinear + 1);
+            drawInfo.textureFilterMode = (TextureFilterMode)(mode);
+        }
+
+        void OnClickBtnDrawMode(object sender, EventArgs e)
+        {
+            int mode = (int)(drawInfo.drawMode + 1) % (int)(DrawMode.Depth + 1);
+            drawInfo.drawMode = (DrawMode)(mode);
+        }
+
+        void OnClickBtnCullMode(object sender, EventArgs e)
+        {
+            int mode = (int)(drawInfo.cullMode + 1) % (int)(CullMode.Back + 1);
+            drawInfo.cullMode = (CullMode)(mode);
+        }
+
+        void OnClickBtnFrontEndCull(object sender, EventArgs e)
+        {
+            int mode = (int)(drawInfo.frontEndCull + 1) % (int)(FrontEndCull.On + 1);
+            drawInfo.frontEndCull = (FrontEndCull)(mode);
+        }
+
+        void OnClickBtnWinding(object sender, EventArgs e)
+        {
+            int mode = (int)(drawInfo.winding + 1) % (int)(Winding.CounterClockwise + 1);
+            drawInfo.winding = (Winding)(mode);
+        }
+
+        void OnClickBtnClippingMode(object sender, EventArgs e)
+        {
+            int mode = (int)(drawInfo.clippingMode+ 1) % (int)(ClippingMode.OnlyNF + 1);
+            drawInfo.clippingMode = (ClippingMode)(mode);
+        }
+
+        void InitBtns()
+        {
+            BtnCtrlPanel.Click += OnClickBtnCtrlPanel;
+            BtnTextureFilterMode.Click += OnClickBtnTextureFilterMode;
+            BtnDrawMode.Click += OnClickBtnDrawMode;
+            BtnCullMode.Click += OnClickBtnCullMode;
+            BtnCullFrontEnd.Click += OnClickBtnFrontEndCull;
+            BtnWinding.Click += OnClickBtnWinding;
+            BtnClippingMode.Click += OnClickBtnClippingMode;
+        }
     }
 }

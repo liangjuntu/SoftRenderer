@@ -12,7 +12,7 @@ namespace SoftRenderer
     {
         Point,
         Bilinear,
-        Trilinear
+        //Trilinear
     }
 
     public class Texture

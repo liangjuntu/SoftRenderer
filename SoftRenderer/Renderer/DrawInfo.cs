@@ -27,5 +27,21 @@ namespace SoftRenderer
         public CullMode cullMode = CullMode.Back;
         public Winding winding = Winding.CounterClockwise;
         public ClippingMode clippingMode = ClippingMode.SixPlane;
+
+        public void CheckParams()
+        {
+            if(CameraNear < 0.01f)
+            {
+                CameraNear = 0.01f;
+            }
+            if(CameraFar <= CameraNear)
+            {
+                   CameraFar = CameraNear + 0.01f;
+            }
+            if(CameraFov < 0)
+            {
+                CameraFov = 60f;
+            }
+        }
     }
 }

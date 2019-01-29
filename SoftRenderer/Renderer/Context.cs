@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Numerics;
 
 namespace SoftRenderer
 {
@@ -51,6 +52,8 @@ namespace SoftRenderer
         public CullMode cullMode = CullMode.None;
         public FrontEndCull frontEndCull = FrontEndCull.Off;
         public ClippingMode clippingMode = ClippingMode.SixPlane;
+        public ShadeMode shadeMode = ShadeMode.Texture;
+        public Vector4 ambient = Vector4.Zero;
 
         public Context(Size size)
         {

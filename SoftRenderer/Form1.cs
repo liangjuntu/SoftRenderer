@@ -24,6 +24,8 @@ namespace SoftRenderer
         Renderer renderer;
         List<GameObject> gameObjects;
         DrawInfo drawInfo;
+        Light light;
+        Vector4 ambient;
         bool isDrawing = false;
         //System.Timers.Timer timer;
         //用下面这个Timer，是单线程的，上面的是多线程
@@ -54,6 +56,8 @@ namespace SoftRenderer
             //timer.Start();
 
             drawInfo = new DrawInfo();
+            light = new Light();
+            ambient = new Vector4(0.2f, 0.2f, 0.2f, 1f);
 
             timer = new System.Windows.Forms.Timer(); 
             timer.Enabled = true;
@@ -186,6 +190,8 @@ namespace SoftRenderer
             isDrawing = true;
             renderer.Clear();
             renderer.SetUpCameraAndContext(drawInfo);
+            renderer.SetUPLight(light);
+            renderer.SetUPAmbient(ambient);
             renderer.DrawAll(gameObjects);
             renderer.DrawStatics();
             renderer.Present();
@@ -252,6 +258,18 @@ namespace SoftRenderer
             drawInfo.CameraFar = Utils.SafeToSingle(Far.Text);
             drawInfo.CameraFov = Utils.SafeToSingle(Fov.Text);
 
+            light.lightDir.X = Utils.SafeToSingle(LightDirX.Text);
+            light.lightDir.Y = Utils.SafeToSingle(LightDirY.Text);
+            light.lightDir.Z = Utils.SafeToSingle(LightDirZ.Text);
+
+            light.lightColor.X = Utils.SafeToSingle(LightColR.Text);
+            light.lightColor.Y = Utils.SafeToSingle(LightColG.Text);
+            light.lightColor.Z = Utils.SafeToSingle(LightColB.Text);
+
+            ambient.X = Utils.SafeToSingle(AmbientR.Text);
+            ambient.Y = Utils.SafeToSingle(AmbientG.Text);
+            ambient.Z = Utils.SafeToSingle(AmbientB.Text);
+            
         }
 
         void RefreshUI()
@@ -293,7 +311,20 @@ namespace SoftRenderer
             BtnCullFrontEnd.Text = String.Format("FrontEnd:{0}", drawInfo.frontEndCull.ToString());
             BtnWinding.Text = String.Format("Winding:{0}", drawInfo.winding.ToString());
             BtnClippingMode.Text = String.Format("Clipping:{0}", drawInfo.clippingMode.ToString());
-           
+            BtnShadeMode.Text = String.Format("Shade:{0}", drawInfo.shadeMode.ToString());
+
+            LightDirX.Text = light.lightDir.X.ToString();
+            LightDirY.Text = light.lightDir.Y.ToString();
+            LightDirZ.Text = light.lightDir.Z.ToString();
+
+            LightColR.Text = light.lightColor.X.ToString();
+            LightColG.Text = light.lightColor.Y.ToString();
+            LightColB.Text = light.lightColor.Z.ToString();
+
+            AmbientR.Text = ambient.X.ToString();
+            AmbientG.Text = ambient.Y.ToString();
+            AmbientB.Text = ambient.Z.ToString();
+
         }
 
         void OnClickBtnCtrlPanel(object sender, EventArgs e)
@@ -336,6 +367,11 @@ namespace SoftRenderer
             int mode = (int)(drawInfo.clippingMode+ 1) % (int)(ClippingMode.OnlyNF + 1);
             drawInfo.clippingMode = (ClippingMode)(mode);
         }
+        void OnClickBtnShadeMode(object sender, EventArgs e)
+        {
+            int mode = (int)(drawInfo.shadeMode + 1) % (int)(ShadeMode.NDotL + 1);
+            drawInfo.shadeMode = (ShadeMode)mode;
+        }
 
         void InitBtns()
         {
@@ -346,6 +382,8 @@ namespace SoftRenderer
             BtnCullFrontEnd.Click += OnClickBtnFrontEndCull;
             BtnWinding.Click += OnClickBtnWinding;
             BtnClippingMode.Click += OnClickBtnClippingMode;
+            BtnShadeMode.Click += OnClickBtnShadeMode;
         }
+
     }
 }

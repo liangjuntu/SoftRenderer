@@ -27,6 +27,7 @@ namespace SoftRenderer
         public CullMode cullMode = CullMode.Back;
         public Winding winding = Winding.CounterClockwise;
         public ClippingMode clippingMode = ClippingMode.SixPlane;
+        public ShadeMode shadeMode = ShadeMode.Texture;
 
         public void CheckParams()
         {

@@ -18,6 +18,7 @@ namespace SoftRenderer
         Context context;
         Rasterizer rasterizer;
         public Camera camera { protected set; get; }
+        Light light;
        
         public Renderer(Graphics g)
         {
@@ -588,6 +589,9 @@ namespace SoftRenderer
                 shaderContext.SetViewProjectionMatrix(viewMatrix, projectionMatrix);
 
                 shaderContext.textureFilterMode = context.textureFilterMode;
+                shaderContext.shadeMode = context.shadeMode;
+                shaderContext.SetLight(light);
+                shaderContext.ambient = context.ambient;
 
                 Shader shader = new Shader(shaderContext);
 
@@ -616,6 +620,17 @@ namespace SoftRenderer
             context.cullMode = drawInfo.cullMode;
             context.frontEndCull = drawInfo.frontEndCull;
             context.clippingMode = drawInfo.clippingMode;
+            context.shadeMode = drawInfo.shadeMode;
+        }
+
+        public void SetUPLight(Light l)
+        {
+            light = l;
+        }
+
+        public void SetUPAmbient(Vector4 ambient)
+        {
+            context.ambient = ambient;
         }
 
         public void DrawStatics()

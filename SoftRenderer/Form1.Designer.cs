@@ -33,6 +33,21 @@
             this.PositionY = new System.Windows.Forms.TextBox();
             this.PositionZ = new System.Windows.Forms.TextBox();
             this.CtrlPanel = new System.Windows.Forms.Panel();
+            this.LabelLightCol = new System.Windows.Forms.Label();
+            this.LightColB = new System.Windows.Forms.TextBox();
+            this.LightColR = new System.Windows.Forms.TextBox();
+            this.LightColG = new System.Windows.Forms.TextBox();
+            this.LabelLightDir = new System.Windows.Forms.Label();
+            this.LightDirZ = new System.Windows.Forms.TextBox();
+            this.LightDirX = new System.Windows.Forms.TextBox();
+            this.LightDirY = new System.Windows.Forms.TextBox();
+            this.BtnShadeMode = new System.Windows.Forms.Button();
+            this.BtnClippingMode = new System.Windows.Forms.Button();
+            this.BtnWinding = new System.Windows.Forms.Button();
+            this.BtnCullFrontEnd = new System.Windows.Forms.Button();
+            this.BtnCullMode = new System.Windows.Forms.Button();
+            this.BtnDrawMode = new System.Windows.Forms.Button();
+            this.BtnTextureFilterMode = new System.Windows.Forms.Button();
             this.Fov = new System.Windows.Forms.TextBox();
             this.LabelFov = new System.Windows.Forms.Label();
             this.Far = new System.Windows.Forms.TextBox();
@@ -60,12 +75,10 @@
             this.RotationX = new System.Windows.Forms.TextBox();
             this.RotationY = new System.Windows.Forms.TextBox();
             this.BtnCtrlPanel = new System.Windows.Forms.Button();
-            this.BtnTextureFilterMode = new System.Windows.Forms.Button();
-            this.BtnDrawMode = new System.Windows.Forms.Button();
-            this.BtnCullMode = new System.Windows.Forms.Button();
-            this.BtnCullFrontEnd = new System.Windows.Forms.Button();
-            this.BtnWinding = new System.Windows.Forms.Button();
-            this.BtnClippingMode = new System.Windows.Forms.Button();
+            this.LabelAmbient = new System.Windows.Forms.Label();
+            this.AmbientB = new System.Windows.Forms.TextBox();
+            this.AmbientR = new System.Windows.Forms.TextBox();
+            this.AmbientG = new System.Windows.Forms.TextBox();
             this.CtrlPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,6 +118,19 @@
             // 
             // CtrlPanel
             // 
+            this.CtrlPanel.Controls.Add(this.AmbientB);
+            this.CtrlPanel.Controls.Add(this.AmbientR);
+            this.CtrlPanel.Controls.Add(this.AmbientG);
+            this.CtrlPanel.Controls.Add(this.LabelAmbient);
+            this.CtrlPanel.Controls.Add(this.LabelLightCol);
+            this.CtrlPanel.Controls.Add(this.LightColB);
+            this.CtrlPanel.Controls.Add(this.LightColR);
+            this.CtrlPanel.Controls.Add(this.LightColG);
+            this.CtrlPanel.Controls.Add(this.LabelLightDir);
+            this.CtrlPanel.Controls.Add(this.LightDirZ);
+            this.CtrlPanel.Controls.Add(this.LightDirX);
+            this.CtrlPanel.Controls.Add(this.LightDirY);
+            this.CtrlPanel.Controls.Add(this.BtnShadeMode);
             this.CtrlPanel.Controls.Add(this.BtnClippingMode);
             this.CtrlPanel.Controls.Add(this.BtnWinding);
             this.CtrlPanel.Controls.Add(this.BtnCullFrontEnd);
@@ -145,6 +171,137 @@
             this.CtrlPanel.Name = "CtrlPanel";
             this.CtrlPanel.Size = new System.Drawing.Size(185, 426);
             this.CtrlPanel.TabIndex = 4;
+            // 
+            // LabelLightCol
+            // 
+            this.LabelLightCol.AutoSize = true;
+            this.LabelLightCol.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LabelLightCol.Location = new System.Drawing.Point(13, 340);
+            this.LabelLightCol.Name = "LabelLightCol";
+            this.LabelLightCol.Size = new System.Drawing.Size(63, 14);
+            this.LabelLightCol.TabIndex = 43;
+            this.LabelLightCol.Text = "LightCol";
+            // 
+            // LightColB
+            // 
+            this.LightColB.Location = new System.Drawing.Point(148, 339);
+            this.LightColB.Name = "LightColB";
+            this.LightColB.Size = new System.Drawing.Size(27, 21);
+            this.LightColB.TabIndex = 45;
+            this.LightColB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LightColR
+            // 
+            this.LightColR.Location = new System.Drawing.Point(82, 339);
+            this.LightColR.Name = "LightColR";
+            this.LightColR.Size = new System.Drawing.Size(27, 21);
+            this.LightColR.TabIndex = 42;
+            this.LightColR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LightColG
+            // 
+            this.LightColG.Location = new System.Drawing.Point(115, 339);
+            this.LightColG.Name = "LightColG";
+            this.LightColG.Size = new System.Drawing.Size(27, 21);
+            this.LightColG.TabIndex = 44;
+            this.LightColG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LabelLightDir
+            // 
+            this.LabelLightDir.AutoSize = true;
+            this.LabelLightDir.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LabelLightDir.Location = new System.Drawing.Point(13, 311);
+            this.LabelLightDir.Name = "LabelLightDir";
+            this.LabelLightDir.Size = new System.Drawing.Size(63, 14);
+            this.LabelLightDir.TabIndex = 39;
+            this.LabelLightDir.Text = "LightDir";
+            // 
+            // LightDirZ
+            // 
+            this.LightDirZ.Location = new System.Drawing.Point(148, 310);
+            this.LightDirZ.Name = "LightDirZ";
+            this.LightDirZ.Size = new System.Drawing.Size(27, 21);
+            this.LightDirZ.TabIndex = 41;
+            this.LightDirZ.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LightDirX
+            // 
+            this.LightDirX.Location = new System.Drawing.Point(82, 310);
+            this.LightDirX.Name = "LightDirX";
+            this.LightDirX.Size = new System.Drawing.Size(27, 21);
+            this.LightDirX.TabIndex = 38;
+            this.LightDirX.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LightDirY
+            // 
+            this.LightDirY.Location = new System.Drawing.Point(115, 310);
+            this.LightDirY.Name = "LightDirY";
+            this.LightDirY.Size = new System.Drawing.Size(27, 21);
+            this.LightDirY.TabIndex = 40;
+            this.LightDirY.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // BtnShadeMode
+            // 
+            this.BtnShadeMode.Location = new System.Drawing.Point(6, 285);
+            this.BtnShadeMode.Name = "BtnShadeMode";
+            this.BtnShadeMode.Size = new System.Drawing.Size(136, 23);
+            this.BtnShadeMode.TabIndex = 37;
+            this.BtnShadeMode.Text = "Shade:Tex";
+            this.BtnShadeMode.UseVisualStyleBackColor = true;
+            // 
+            // BtnClippingMode
+            // 
+            this.BtnClippingMode.Location = new System.Drawing.Point(6, 266);
+            this.BtnClippingMode.Name = "BtnClippingMode";
+            this.BtnClippingMode.Size = new System.Drawing.Size(136, 23);
+            this.BtnClippingMode.TabIndex = 36;
+            this.BtnClippingMode.Text = "Clipping:SixPlane";
+            this.BtnClippingMode.UseVisualStyleBackColor = true;
+            // 
+            // BtnWinding
+            // 
+            this.BtnWinding.Location = new System.Drawing.Point(6, 246);
+            this.BtnWinding.Name = "BtnWinding";
+            this.BtnWinding.Size = new System.Drawing.Size(136, 23);
+            this.BtnWinding.TabIndex = 35;
+            this.BtnWinding.Text = "Winding:CCV";
+            this.BtnWinding.UseVisualStyleBackColor = true;
+            // 
+            // BtnCullFrontEnd
+            // 
+            this.BtnCullFrontEnd.Location = new System.Drawing.Point(71, 227);
+            this.BtnCullFrontEnd.Name = "BtnCullFrontEnd";
+            this.BtnCullFrontEnd.Size = new System.Drawing.Size(90, 22);
+            this.BtnCullFrontEnd.TabIndex = 34;
+            this.BtnCullFrontEnd.Text = "FrontEnd:On";
+            this.BtnCullFrontEnd.UseVisualStyleBackColor = true;
+            // 
+            // BtnCullMode
+            // 
+            this.BtnCullMode.Location = new System.Drawing.Point(8, 227);
+            this.BtnCullMode.Name = "BtnCullMode";
+            this.BtnCullMode.Size = new System.Drawing.Size(68, 22);
+            this.BtnCullMode.TabIndex = 33;
+            this.BtnCullMode.Text = "Cull:Back";
+            this.BtnCullMode.UseVisualStyleBackColor = true;
+            // 
+            // BtnDrawMode
+            // 
+            this.BtnDrawMode.Location = new System.Drawing.Point(8, 207);
+            this.BtnDrawMode.Name = "BtnDrawMode";
+            this.BtnDrawMode.Size = new System.Drawing.Size(136, 23);
+            this.BtnDrawMode.TabIndex = 32;
+            this.BtnDrawMode.Text = "DrawMode:Normal";
+            this.BtnDrawMode.UseVisualStyleBackColor = true;
+            // 
+            // BtnTextureFilterMode
+            // 
+            this.BtnTextureFilterMode.Location = new System.Drawing.Point(8, 188);
+            this.BtnTextureFilterMode.Name = "BtnTextureFilterMode";
+            this.BtnTextureFilterMode.Size = new System.Drawing.Size(136, 23);
+            this.BtnTextureFilterMode.TabIndex = 31;
+            this.BtnTextureFilterMode.Text = "TexFilter:Bilinear";
+            this.BtnTextureFilterMode.UseVisualStyleBackColor = true;
             // 
             // Fov
             // 
@@ -379,59 +536,39 @@
             this.BtnCtrlPanel.Text = "CtrlPanel";
             this.BtnCtrlPanel.UseVisualStyleBackColor = true;
             // 
-            // BtnTextureFilterMode
+            // LabelAmbient
             // 
-            this.BtnTextureFilterMode.Location = new System.Drawing.Point(8, 192);
-            this.BtnTextureFilterMode.Name = "BtnTextureFilterMode";
-            this.BtnTextureFilterMode.Size = new System.Drawing.Size(136, 23);
-            this.BtnTextureFilterMode.TabIndex = 31;
-            this.BtnTextureFilterMode.Text = "TexFilter:Bilinear";
-            this.BtnTextureFilterMode.UseVisualStyleBackColor = true;
+            this.LabelAmbient.AutoSize = true;
+            this.LabelAmbient.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LabelAmbient.Location = new System.Drawing.Point(13, 370);
+            this.LabelAmbient.Name = "LabelAmbient";
+            this.LabelAmbient.Size = new System.Drawing.Size(56, 14);
+            this.LabelAmbient.TabIndex = 46;
+            this.LabelAmbient.Text = "Ambient";
             // 
-            // BtnDrawMode
+            // AmbientB
             // 
-            this.BtnDrawMode.Location = new System.Drawing.Point(8, 221);
-            this.BtnDrawMode.Name = "BtnDrawMode";
-            this.BtnDrawMode.Size = new System.Drawing.Size(136, 23);
-            this.BtnDrawMode.TabIndex = 32;
-            this.BtnDrawMode.Text = "DrawMode:Normal";
-            this.BtnDrawMode.UseVisualStyleBackColor = true;
+            this.AmbientB.Location = new System.Drawing.Point(148, 369);
+            this.AmbientB.Name = "AmbientB";
+            this.AmbientB.Size = new System.Drawing.Size(27, 21);
+            this.AmbientB.TabIndex = 49;
+            this.AmbientB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // BtnCullMode
+            // AmbientR
             // 
-            this.BtnCullMode.Location = new System.Drawing.Point(8, 250);
-            this.BtnCullMode.Name = "BtnCullMode";
-            this.BtnCullMode.Size = new System.Drawing.Size(68, 22);
-            this.BtnCullMode.TabIndex = 33;
-            this.BtnCullMode.Text = "Cull:Back";
-            this.BtnCullMode.UseVisualStyleBackColor = true;
+            this.AmbientR.Location = new System.Drawing.Point(82, 369);
+            this.AmbientR.Name = "AmbientR";
+            this.AmbientR.Size = new System.Drawing.Size(27, 21);
+            this.AmbientR.TabIndex = 47;
+            this.AmbientR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // BtnCullFrontEnd
+            // AmbientG
             // 
-            this.BtnCullFrontEnd.Location = new System.Drawing.Point(82, 250);
-            this.BtnCullFrontEnd.Name = "BtnCullFrontEnd";
-            this.BtnCullFrontEnd.Size = new System.Drawing.Size(90, 22);
-            this.BtnCullFrontEnd.TabIndex = 34;
-            this.BtnCullFrontEnd.Text = "FrontEnd:On";
-            this.BtnCullFrontEnd.UseVisualStyleBackColor = true;
-            // 
-            // BtnWinding
-            // 
-            this.BtnWinding.Location = new System.Drawing.Point(6, 278);
-            this.BtnWinding.Name = "BtnWinding";
-            this.BtnWinding.Size = new System.Drawing.Size(136, 23);
-            this.BtnWinding.TabIndex = 35;
-            this.BtnWinding.Text = "Winding:CCV";
-            this.BtnWinding.UseVisualStyleBackColor = true;
-            // 
-            // BtnClippingMode
-            // 
-            this.BtnClippingMode.Location = new System.Drawing.Point(6, 307);
-            this.BtnClippingMode.Name = "BtnClippingMode";
-            this.BtnClippingMode.Size = new System.Drawing.Size(136, 23);
-            this.BtnClippingMode.TabIndex = 36;
-            this.BtnClippingMode.Text = "Clipping:SixPlane";
-            this.BtnClippingMode.UseVisualStyleBackColor = true;
+            this.AmbientG.Location = new System.Drawing.Point(115, 369);
+            this.AmbientG.Name = "AmbientG";
+            this.AmbientG.Size = new System.Drawing.Size(27, 21);
+            this.AmbientG.TabIndex = 48;
+            this.AmbientG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Form1
             // 
@@ -488,6 +625,19 @@
         private System.Windows.Forms.Button BtnWinding;
         private System.Windows.Forms.Button BtnCullFrontEnd;
         private System.Windows.Forms.Button BtnCullMode;
+        private System.Windows.Forms.Button BtnShadeMode;
+        private System.Windows.Forms.Label LabelLightCol;
+        private System.Windows.Forms.TextBox LightColB;
+        private System.Windows.Forms.TextBox LightColR;
+        private System.Windows.Forms.TextBox LightColG;
+        private System.Windows.Forms.Label LabelLightDir;
+        private System.Windows.Forms.TextBox LightDirZ;
+        private System.Windows.Forms.TextBox LightDirX;
+        private System.Windows.Forms.TextBox LightDirY;
+        private System.Windows.Forms.TextBox AmbientB;
+        private System.Windows.Forms.TextBox AmbientR;
+        private System.Windows.Forms.TextBox AmbientG;
+        private System.Windows.Forms.Label LabelAmbient;
     }
 }
 

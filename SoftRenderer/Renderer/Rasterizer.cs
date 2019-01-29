@@ -284,7 +284,7 @@ namespace SoftRenderer
 
             vNDC.color = vClip.color * fInvW;
             vNDC.texcoord = vClip.texcoord * fInvW;
-            vNDC.normal = vClip.normal * fInvW;
+            vNDC.normalWorld = vClip.normalWorld * fInvW;
 
             return vNDC;
         }
@@ -374,11 +374,13 @@ namespace SoftRenderer
                         Vector4 color = w0 * v0.color + w1 * v1.color + w2 * v2.color;
                         color *= Z_Eye;
 
+                        Vector3 normalWorld = w0 * v0.normalWorld + w1 * v1.normalWorld + w2 * v2.normalWorld;
+
                         if (shader != null)
                         {
                             VSOutput fragment = new VSOutput();
                             //v.position = 
-                            //v.normal = 
+                            fragment.normalWorld = normalWorld;
                             fragment.texcoord = uv;
                             fragment.color = color;
 

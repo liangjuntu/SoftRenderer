@@ -548,6 +548,11 @@ namespace SoftRenderer
         */
         public void DrawGameObject(GameObject gameobject, Shader shader)
         {
+            WavefrontObject meshObj = gameobject.meshObj;
+            if(meshObj == null)
+            {
+                return;
+            }
             context.statics.meshCount += 1;
 
             //设置Shader相关
@@ -559,7 +564,6 @@ namespace SoftRenderer
             shader.texture = texture;
             rasterizer.shader = shader;
 
-            WavefrontObject meshObj = gameobject.meshObj;
 
             foreach (var faceGroup in meshObj.Groups)
             {
@@ -592,6 +596,7 @@ namespace SoftRenderer
                 shaderContext.shadeMode = context.shadeMode;
                 shaderContext.SetLight(light);
                 shaderContext.ambient = context.ambient;
+                shaderContext.invertTexture = context.invertTexture;
 
                 Shader shader = new Shader(shaderContext);
 
@@ -621,6 +626,7 @@ namespace SoftRenderer
             context.frontEndCull = drawInfo.frontEndCull;
             context.clippingMode = drawInfo.clippingMode;
             context.shadeMode = drawInfo.shadeMode;
+            context.invertTexture = drawInfo.invertTexture;
         }
 
         public void SetUPLight(Light l)

@@ -149,12 +149,12 @@ namespace SoftRenderer.Test
                 int p0 = CubeTestData.indexs[i];
                 int p1 = CubeTestData.indexs[i+1];
                 int p2 = CubeTestData.indexs[i+2];
-                WavefrontVertex v0 = new WavefrontVertex(p0, index0, index0);
-                WavefrontVertex v1 = new WavefrontVertex(p1, index1, index1);
-                WavefrontVertex v2 = new WavefrontVertex(p2, index2, index2);
-                v0.Color = index0;
-                v1.Color = index1;
-                v2.Color = index2;
+                WavefrontVertex v0 = new WavefrontVertex(p0+1, index0+1, index0+1);
+                WavefrontVertex v1 = new WavefrontVertex(p1+1, index1+1, index1+1);
+                WavefrontVertex v2 = new WavefrontVertex(p2+1, index2+1, index2+1);
+                v0.Color = index0+1;
+                v1.Color = index1+1;
+                v2.Color = index2+1;
                 face.Vertices.Add(v0);
                 face.Vertices.Add(v1);
                 face.Vertices.Add(v2);

@@ -91,12 +91,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="TestData\cow.obj" />
+    <None Include="TestData\qxd.obj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="TestData\7fb813b4ly4fz5ve35ps6j20go0m8431.jpg" />
+    <Content Include="TestData\qxd_hair_albedo.png" />
     <Content Include="TestData\texture.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

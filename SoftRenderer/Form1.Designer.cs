@@ -33,6 +33,12 @@
             this.PositionY = new System.Windows.Forms.TextBox();
             this.PositionZ = new System.Windows.Forms.TextBox();
             this.CtrlPanel = new System.Windows.Forms.Panel();
+            this.BtnOpenTex = new System.Windows.Forms.Button();
+            this.BtnOpenObj = new System.Windows.Forms.Button();
+            this.AmbientB = new System.Windows.Forms.TextBox();
+            this.AmbientR = new System.Windows.Forms.TextBox();
+            this.AmbientG = new System.Windows.Forms.TextBox();
+            this.LabelAmbient = new System.Windows.Forms.Label();
             this.LabelLightCol = new System.Windows.Forms.Label();
             this.LightColB = new System.Windows.Forms.TextBox();
             this.LightColR = new System.Windows.Forms.TextBox();
@@ -75,10 +81,7 @@
             this.RotationX = new System.Windows.Forms.TextBox();
             this.RotationY = new System.Windows.Forms.TextBox();
             this.BtnCtrlPanel = new System.Windows.Forms.Button();
-            this.LabelAmbient = new System.Windows.Forms.Label();
-            this.AmbientB = new System.Windows.Forms.TextBox();
-            this.AmbientR = new System.Windows.Forms.TextBox();
-            this.AmbientG = new System.Windows.Forms.TextBox();
+            this.BtnInvUV = new System.Windows.Forms.Button();
             this.CtrlPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -118,6 +121,9 @@
             // 
             // CtrlPanel
             // 
+            this.CtrlPanel.Controls.Add(this.BtnInvUV);
+            this.CtrlPanel.Controls.Add(this.BtnOpenTex);
+            this.CtrlPanel.Controls.Add(this.BtnOpenObj);
             this.CtrlPanel.Controls.Add(this.AmbientB);
             this.CtrlPanel.Controls.Add(this.AmbientR);
             this.CtrlPanel.Controls.Add(this.AmbientG);
@@ -171,6 +177,58 @@
             this.CtrlPanel.Name = "CtrlPanel";
             this.CtrlPanel.Size = new System.Drawing.Size(185, 426);
             this.CtrlPanel.TabIndex = 4;
+            // 
+            // BtnOpenTex
+            // 
+            this.BtnOpenTex.Location = new System.Drawing.Point(65, 396);
+            this.BtnOpenTex.Name = "BtnOpenTex";
+            this.BtnOpenTex.Size = new System.Drawing.Size(55, 23);
+            this.BtnOpenTex.TabIndex = 51;
+            this.BtnOpenTex.Text = "OpenTex";
+            this.BtnOpenTex.UseVisualStyleBackColor = true;
+            // 
+            // BtnOpenObj
+            // 
+            this.BtnOpenObj.Location = new System.Drawing.Point(3, 396);
+            this.BtnOpenObj.Name = "BtnOpenObj";
+            this.BtnOpenObj.Size = new System.Drawing.Size(59, 23);
+            this.BtnOpenObj.TabIndex = 50;
+            this.BtnOpenObj.Text = "OpenObj";
+            this.BtnOpenObj.UseVisualStyleBackColor = true;
+            // 
+            // AmbientB
+            // 
+            this.AmbientB.Location = new System.Drawing.Point(148, 369);
+            this.AmbientB.Name = "AmbientB";
+            this.AmbientB.Size = new System.Drawing.Size(27, 21);
+            this.AmbientB.TabIndex = 49;
+            this.AmbientB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // AmbientR
+            // 
+            this.AmbientR.Location = new System.Drawing.Point(82, 369);
+            this.AmbientR.Name = "AmbientR";
+            this.AmbientR.Size = new System.Drawing.Size(27, 21);
+            this.AmbientR.TabIndex = 47;
+            this.AmbientR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // AmbientG
+            // 
+            this.AmbientG.Location = new System.Drawing.Point(115, 369);
+            this.AmbientG.Name = "AmbientG";
+            this.AmbientG.Size = new System.Drawing.Size(27, 21);
+            this.AmbientG.TabIndex = 48;
+            this.AmbientG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // LabelAmbient
+            // 
+            this.LabelAmbient.AutoSize = true;
+            this.LabelAmbient.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LabelAmbient.Location = new System.Drawing.Point(13, 370);
+            this.LabelAmbient.Name = "LabelAmbient";
+            this.LabelAmbient.Size = new System.Drawing.Size(56, 14);
+            this.LabelAmbient.TabIndex = 46;
+            this.LabelAmbient.Text = "Ambient";
             // 
             // LabelLightCol
             // 
@@ -536,39 +594,14 @@
             this.BtnCtrlPanel.Text = "CtrlPanel";
             this.BtnCtrlPanel.UseVisualStyleBackColor = true;
             // 
-            // LabelAmbient
+            // BtnInvUV
             // 
-            this.LabelAmbient.AutoSize = true;
-            this.LabelAmbient.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.LabelAmbient.Location = new System.Drawing.Point(13, 370);
-            this.LabelAmbient.Name = "LabelAmbient";
-            this.LabelAmbient.Size = new System.Drawing.Size(56, 14);
-            this.LabelAmbient.TabIndex = 46;
-            this.LabelAmbient.Text = "Ambient";
-            // 
-            // AmbientB
-            // 
-            this.AmbientB.Location = new System.Drawing.Point(148, 369);
-            this.AmbientB.Name = "AmbientB";
-            this.AmbientB.Size = new System.Drawing.Size(27, 21);
-            this.AmbientB.TabIndex = 49;
-            this.AmbientB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // AmbientR
-            // 
-            this.AmbientR.Location = new System.Drawing.Point(82, 369);
-            this.AmbientR.Name = "AmbientR";
-            this.AmbientR.Size = new System.Drawing.Size(27, 21);
-            this.AmbientR.TabIndex = 47;
-            this.AmbientR.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // AmbientG
-            // 
-            this.AmbientG.Location = new System.Drawing.Point(115, 369);
-            this.AmbientG.Name = "AmbientG";
-            this.AmbientG.Size = new System.Drawing.Size(27, 21);
-            this.AmbientG.TabIndex = 48;
-            this.AmbientG.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BtnInvUV.Location = new System.Drawing.Point(125, 396);
+            this.BtnInvUV.Name = "BtnInvUV";
+            this.BtnInvUV.Size = new System.Drawing.Size(55, 23);
+            this.BtnInvUV.TabIndex = 52;
+            this.BtnInvUV.Text = "InvUV";
+            this.BtnInvUV.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -638,6 +671,9 @@
         private System.Windows.Forms.TextBox AmbientR;
         private System.Windows.Forms.TextBox AmbientG;
         private System.Windows.Forms.Label LabelAmbient;
+        private System.Windows.Forms.Button BtnOpenTex;
+        private System.Windows.Forms.Button BtnOpenObj;
+        private System.Windows.Forms.Button BtnInvUV;
     }
 }
 

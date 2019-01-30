@@ -21,9 +21,24 @@ namespace SoftRenderer
         public int Height { get; private set; }
 
         Bitmap bitmap;
+        Vector4[,] colors;
 
         private Texture()
         {
+        }
+
+        void CacheColors()
+        {
+            colors = new Vector4[Width, Height];
+            for(int x = 0; x < Width; ++x)
+            {
+                for(int y = 0; y < Height; y++)
+                {
+                    Color p = bitmap.GetPixel(x, y);
+                    Vector4 c = Utils.ColorToVector(p);
+                    colors[x, y] = c;
+                }
+            }
         }
 
         public static Texture FromFile(string filePath, int width = -1, int height = -1)
@@ -43,6 +58,7 @@ namespace SoftRenderer
             }
 
             texture.bitmap = new Bitmap(img, texture.Width, texture.Height);
+            texture.CacheColors();
             return texture;
         }
 
@@ -61,8 +77,10 @@ namespace SoftRenderer
             //纹理坐标左上角为原点,http://blog.sina.com.cn/s/blog_80cc3d870101lntk.html
             uIdx = Utils.Clamp(uIdx, 0, Width - 1);
             vIdx = Utils.Clamp(vIdx, 0, Height - 1);
-            Color col = bitmap.GetPixel(uIdx, vIdx);
-            return new Vector4(col.R / 255f, col.G / 255f, col.B / 255f, col.A / 255f);
+            Vector4 col = colors[uIdx, vIdx];
+            return col;
+            //Color col = bitmap.GetPixel(uIdx, vIdx);
+            //return new Vector4(col.R / 255f, col.G / 255f, col.B / 255f, col.A / 255f);
         }
 
         Vector4 BilinearFiltering(Vector2 texcoord)
@@ -88,11 +106,17 @@ namespace SoftRenderer
             right = Utils.Clamp(right, 0, Width - 1);
             top = Utils.Clamp(top, 0, Height - 1);
             bottom = Utils.Clamp(bottom, 0, Height - 1);
-            
+
+            /*
             Vector4 lt = Utils.ColorToVector(bitmap.GetPixel(left, top));
             Vector4 rt = Utils.ColorToVector(bitmap.GetPixel(right, top));
             Vector4 lb = Utils.ColorToVector(bitmap.GetPixel(left, bottom));
             Vector4 rb = Utils.ColorToVector(bitmap.GetPixel(right, bottom));
+            */
+            Vector4 lt = colors[left, top];
+            Vector4 rt = colors[right, top];
+            Vector4 lb = colors[left, bottom];
+            Vector4 rb = colors[right, bottom];
 
             float wlt = (1 - du) * (1 - dv);
             float wrt = (du) * (1 - dv);

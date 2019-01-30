@@ -31,12 +31,14 @@ namespace SoftRenderer
         //用下面这个Timer，是单线程的，上面的是多线程
         System.Windows.Forms.Timer timer;
 
-        
+        Games.WavefrontReader wavefrontReader = new Games.WavefrontReader();
+
+        bool isResize = false;
 
         float FPS = 30f;
         //对外显示的
-        public String meshPath = "";
-        public String texturePath = "../../TestData/texture.jpg";
+        String meshPath = "";
+        String texturePath = "../../TestData/texture.jpg";
 
         Vector3 objPosition = Vector3.Zero;
         Vector3 objRotation = Vector3.Zero;
@@ -76,11 +78,7 @@ namespace SoftRenderer
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            if (renderer != null)
-            {
-                //form1Graphics = this.CreateGraphics();
-                //renderer.OnResize(form1Graphics);
-            }
+            isResize = true;
         }
 
         /*
@@ -149,13 +147,6 @@ namespace SoftRenderer
             }
         }
 
-        void AddGameObject(string path)
-        {
-            //TODO
-            GameObject gameObject = new GameObject();
-            gameObjects.Add(gameObject);
-        }
-        
         void InitDefault()
         {
             //default GameObject
@@ -168,9 +159,6 @@ namespace SoftRenderer
             gameObject.meshObj = Test.CubeTestData.ToWavefrontObject();
             Texture texture = Texture.FromFile(texturePath);
             gameObject.texture = texture;
-
-            //default Camera
-
         }
 
         void PreUpdate()
@@ -205,6 +193,12 @@ namespace SoftRenderer
 
         void FrameUpdate(object sender, EventArgs e)
         {
+            if(isResize)
+            {
+                isResize = false;
+                form1Graphics = this.CreateGraphics();
+                renderer.OnResize(form1Graphics);
+            }
             UpdateUI();
             PreUpdate();
             DoUpdate();
@@ -325,6 +319,8 @@ namespace SoftRenderer
             AmbientG.Text = ambient.Y.ToString();
             AmbientB.Text = ambient.Z.ToString();
 
+            BtnInvUV.Text = drawInfo.invertTexture ? "InvUV" : "UV";
+
         }
 
         void OnClickBtnCtrlPanel(object sender, EventArgs e)
@@ -373,6 +369,45 @@ namespace SoftRenderer
             drawInfo.shadeMode = (ShadeMode)mode;
         }
 
+        void OnClickBtnOpenObj(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = false;//该值确定是否可以选择多个文件
+            dialog.Title = "请选择文件";
+            dialog.Filter = "Obj文件(*.obj)|*.obj";
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            meshPath = dialog.FileName;
+            System.IO.FileStream objFile = new System.IO.FileStream(meshPath, System.IO.FileMode.Open);
+            Games.WavefrontObject meshObj = wavefrontReader.Read(objFile);
+            //Console.WriteLine(String.Format("Pos:{0}", meshObj.Positions.Count));
+            gameObjects[0].meshObj = meshObj;
+            gameObjects[0].texture = null;
+            
+        }
+        
+        void OnClickBtnOpenTex(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Multiselect = false;//该值确定是否可以选择多个文件
+            dialog.Title = "请选择文件";
+            dialog.Filter = "贴图文件(*.*)|*.*";
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            texturePath = dialog.FileName;
+            Texture texture = Texture.FromFile(texturePath);
+            gameObjects[0].texture = texture;
+        }
+
+        void OnClickBtnInvUV(object sender, EventArgs e)
+        {
+            drawInfo.invertTexture = !drawInfo.invertTexture;
+        }
+
         void InitBtns()
         {
             BtnCtrlPanel.Click += OnClickBtnCtrlPanel;
@@ -383,6 +418,9 @@ namespace SoftRenderer
             BtnWinding.Click += OnClickBtnWinding;
             BtnClippingMode.Click += OnClickBtnClippingMode;
             BtnShadeMode.Click += OnClickBtnShadeMode;
+            BtnOpenObj.Click += OnClickBtnOpenObj;
+            BtnOpenTex.Click += OnClickBtnOpenTex;
+            BtnInvUV.Click += OnClickBtnInvUV;
         }
 
     }

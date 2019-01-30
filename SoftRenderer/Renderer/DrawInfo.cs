@@ -10,10 +10,12 @@ namespace SoftRenderer
 {
     public class DrawInfo
     {
-        //public Vector3 cameraPosition = new Vector3(0, 1, -5f);
+        //public Vector3 cameraPosition = new Vector3(0, 1, -25f);
         public Vector3 cameraPosition = new Vector3(0, 0, -5f);
         public Vector3 cameraEulerAngles = new Vector3(0, 0, 0);
+        //public float CameraNear = 5f;
         public float CameraNear = 1f;
+        //public float CameraFar = 30f;
         public float CameraFar = 10f;
         public float CameraFov = 60f;
         public Color CameraClearColor = Color.Black;
@@ -28,6 +30,7 @@ namespace SoftRenderer
         public Winding winding = Winding.CounterClockwise;
         public ClippingMode clippingMode = ClippingMode.SixPlane;
         public ShadeMode shadeMode = ShadeMode.Texture;
+        public bool invertTexture = false;
 
         public void CheckParams()
         {

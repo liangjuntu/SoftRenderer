@@ -30,6 +30,7 @@ namespace SoftRenderer
         public ShadeMode shadeMode = ShadeMode.Texture;
         public Light light { get; private set; }
         public Vector4 ambient = Vector4.Zero;
+        public bool invertTexture = false;
 
         public void SetViewProjectionMatrix(Matrix4x4 v, Matrix4x4 p)
         {
@@ -83,6 +84,12 @@ namespace SoftRenderer
 
         public PSOutput FragShader(VSOutput v)
         {
+            //invert uv
+            if (shaderContext.invertTexture)
+            {
+                v.texcoord = new Vector2(1 - v.texcoord.X, 1 - v.texcoord.Y);
+            }
+
             PSOutput OUT = new PSOutput();
             Vector4 col = v.color;
             if((shaderContext.shadeMode == ShadeMode.Lighting ||

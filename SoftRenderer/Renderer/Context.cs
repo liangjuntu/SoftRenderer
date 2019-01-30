@@ -54,6 +54,7 @@ namespace SoftRenderer
         public ClippingMode clippingMode = ClippingMode.SixPlane;
         public ShadeMode shadeMode = ShadeMode.Texture;
         public Vector4 ambient = Vector4.Zero;
+        public bool invertTexture = false;
 
         public Context(Size size)
         {

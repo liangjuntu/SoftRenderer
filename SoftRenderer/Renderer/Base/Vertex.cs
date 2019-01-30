@@ -19,12 +19,15 @@ namespace SoftRenderer
         public static Vertex FromWavefrontVertex(WavefrontObject obj, WavefrontVertex v)
         {
             Vertex vertex = new Vertex();
-            vertex.position = new Vector4(obj.Positions[v.Position], 1f);
-            vertex.normal = new Vector4(obj.Normals[v.Normal], 0f);
-            vertex.texcoord = obj.Texcoords[v.Texcoord];
+            vertex.position = new Vector4(obj.Positions[v.Position-1], 1f);
+            if (v.Normal > 0 )
+            {
+                vertex.normal = new Vector4(obj.Normals[v.Normal-1], 0f);
+            }
+            vertex.texcoord = obj.Texcoords[v.Texcoord-1];
             if(v.Color >= 0 && v.Color < obj.Colors.Count)
             {
-                vertex.color = obj.Colors[v.Color];
+                vertex.color = obj.Colors[v.Color-1];
             } else
             {
                 vertex.color = Vector4.One;

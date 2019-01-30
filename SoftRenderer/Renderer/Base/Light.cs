@@ -10,10 +10,10 @@ namespace SoftRenderer
     public class Light
     {
         //方向光
-        public Vector3 lightDir = new Vector3(0, 0, 1);
+        public Vector3 lightDir = new Vector3(-1, 0, 1);
         public Vector4 lightColor = Vector4.One;
         //public Vector4 lightColor = new Vector4(1, 0, 0, 1);
-        public Vector3 lightDirForShader = new Vector3(0, 0, -1);
+        public Vector3 lightDirForShader = new Vector3(1, 0, -1);
         //TODO其他类型的光源
         public void InitForShader()
         {

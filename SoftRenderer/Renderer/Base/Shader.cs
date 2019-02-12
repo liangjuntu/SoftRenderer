@@ -87,7 +87,9 @@ namespace SoftRenderer
             //invert uv
             if (shaderContext.invertTexture)
             {
-                v.texcoord = new Vector2(1 - v.texcoord.X, 1 - v.texcoord.Y);
+                //v.texcoord = new Vector2(1 - v.texcoord.X, 1 - v.texcoord.Y);
+                v.texcoord = new Vector2(v.texcoord.X, 1 - v.texcoord.Y);
+                //v.texcoord = new Vector2(1 - v.texcoord.X, v.texcoord.Y);
             }
 
             PSOutput OUT = new PSOutput();
@@ -103,7 +105,7 @@ namespace SoftRenderer
                 //Lambert Lighting
                 float NDotL = Vector3.Dot(normalWorld, lightDir);
                 NDotL = Utils.Clamp(NDotL, 0, 1);
-                if(shaderContext.shadeMode == ShadeMode.Lighting)
+                if(shaderContext.shadeMode == ShadeMode.Lighting && texture != null)
                 {
                     Vector4 tex = texture.Tex2D(v.texcoord, shaderContext.textureFilterMode);
                     col = tex * (NDotL * shaderContext.light.lightColor + shaderContext.ambient);
@@ -117,6 +119,7 @@ namespace SoftRenderer
             {
                 col = texture.Tex2D(v.texcoord, shaderContext.textureFilterMode);
             }
+            //col = new Vector4(v.texcoord.X, v.texcoord.Y, 0, 1 );
             OUT.color = col;
             return OUT;
         }

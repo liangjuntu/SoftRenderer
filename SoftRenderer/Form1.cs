@@ -40,10 +40,11 @@ namespace SoftRenderer
         String meshPath = "";
         String texturePath = "../../TestData/texture.jpg";
 
-        Vector3 objPosition = Vector3.Zero;
+        //Vector3 objPosition = Vector3.Zero;
+        Vector3 objPosition = new Vector3(0, -2f, 0);
         Vector3 objRotation = Vector3.Zero;
-        Vector3 objScale = Vector3.One;
-        Vector3 objAutoRot = new Vector3(1f, 2f, 0);
+        Vector3 objScale = Vector3.One * 0.1f;
+        Vector3 objAutoRot = new Vector3(0f, 1f, 0);
 
         public Form1()
         {

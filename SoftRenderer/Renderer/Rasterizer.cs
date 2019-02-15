@@ -419,7 +419,7 @@ namespace SoftRenderer
         void DrawWireframe(VSOutput v0, VSOutput v1, VSOutput v2)
         {
             Color col = context.wireframeColor;
-            col = Utils.NextWireframeColor();
+            //col = Utils.NextWireframeColor();
             DrawLine(v0, v1, col);
             DrawLine(v1, v2, col);
             DrawLine(v2, v0, col);
